@@ -11,7 +11,7 @@ console.error = function(){
 	}
 }
 
-exports.WrapComponent = require("./src/client/components/WrapComponent.js").default;
-exports.languageActions = require("./src/client/actions/language.js");
-exports.reducers = require("./src/client/reducers/index.js").default;
-exports.ConfigureStore = require("./src/client/store/ConfigureStore.js").default;
+exports.WrapComponent = require("./lib/client/components/WrapComponent.js").default;
+exports.languageActions = require("./lib/client/actions/language.js");
+exports.reducers = require("./lib/client/reducers/index.js").default;
+exports.ConfigureStore = require("./lib/client/store/ConfigureStore.js").default;
