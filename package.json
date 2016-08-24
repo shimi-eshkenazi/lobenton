@@ -1,6 +1,6 @@
 {
   "name": "lobenton",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Lobenton! Easy to create a web application.",
   "license": "MIT",
   "repository": {
@@ -13,7 +13,10 @@
     "build": "babel src --out-dir lib --copy-files"
   },
   "files": [
-    "lib"
+    "lib",
+    "client.js",
+    "webpack.dev.config.js",
+    "webpack.prod.config.js"
   ],
   "keywords": [
     "babel",
