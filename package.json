@@ -7,10 +7,10 @@
     "type": "git",
     "url": "https://github.com/rexhome7326/lobenton"
   },
-  "main": "./src/index.js",
+  "main": "./lib/index.js",
   "port": "3000",
   "scripts": {
-    "babel": "babel src/client --out-dir lib --copy-files"
+    "build": "babel src --out-dir lib --copy-files"
   },
   "files": [
     "lib"
