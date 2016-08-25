@@ -49,10 +49,18 @@ function patternToMap(pattern) {
 			patternMap[paramReResult[1]] = paramReResult[2];
 			regexArray.push(paramReResult[2]);
 		}else{
-			patternMap[partResult] = "("+partResult+")";
-			
-			if(partResult){
-				regexArray.push("("+partResult+")");	
+			if(partResult === "*"){
+				patternMap[partResult] = "(.+)";
+
+				if (partResult) {
+					regexArray.push("(.+)");
+				}
+			}else{
+				patternMap[partResult] = "(" + partResult + ")";
+
+				if (partResult) {
+					regexArray.push("(" + partResult + ")");
+				}	
 			}
 		}
 	}
