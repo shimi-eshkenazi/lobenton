@@ -171,7 +171,6 @@ class BaseController extends BaseComponent {
 		
 		if(this.state.hasOwnProperty("user")){
 			sourceState.user = this.state.user;
-			delete this.state.user;
 		}
 		
 		this.store = ConfigureStore(function rootReducer(state, action) {
@@ -185,17 +184,27 @@ class BaseController extends BaseComponent {
 	}
 	
 	render(passToLayoutWithoutRedux, sourceState){
-		if(passToLayoutWithoutRedux || sourceState){
-			const type = typeof passToLayoutWithoutRedux || typeof sourceState;
-			
-			if(typeof passToLayoutWithoutRedux !== 'object' || typeof sourceState !== 'object'){
-				throw new Error("Arguments of controller render must be object, "+type+" given.");
-			}
-		}
-		
-		if(passToLayoutWithoutRedux && !sourceState){
+		if (!passToLayoutWithoutRedux && !sourceState) {
+			passToLayoutWithoutRedux = {};
+			sourceState = {};
+		}else if (passToLayoutWithoutRedux && !sourceState) {
 			sourceState = passToLayoutWithoutRedux;
 			passToLayoutWithoutRedux = {};
+			
+			var sourceStateType = typeof sourceState;
+			if (sourceStateType !== 'object') {
+				throw new Error("Arguments of controller render must be object, " + sourceStateType + " given.");
+			}
+		}else{
+			var passToLayoutWithoutReduxType = typeof passToLayoutWithoutRedux;
+			if (passToLayoutWithoutReduxType !== 'object') {
+				throw new Error("Argument 1 of controller render must be object, " + passToLayoutWithoutReduxType + " given.");
+			}
+			
+			var sourceStateType = typeof sourceState;
+			if (sourceStateType !== 'object') {
+				throw new Error("Argument 2 of controller render must be object, " + sourceStateType + " given.");
+			}
 		}
 		
 		try{
