@@ -25,4 +25,4 @@ if(process.env.NODE_ENV === "dev"){
 process.env.NODE_PATH += ":"+dirPath;
 require('module').Module._initPaths();
 require("babel-helper-error-stack");
-module.exports = require("./lobenton").default;
+module.exports = require("./lobenton");
