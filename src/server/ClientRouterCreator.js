@@ -32,15 +32,19 @@ class ClientRouterCreator extends BaseComponent {
 	}
 	
 	initial(build) {
-		const controllerList =  FileUtil.getFileList(path.join(this.config.basePath, "/src/server/controllers/"));
+		try{
+			const controllerList =  FileUtil.getFileList(path.join(this.config.basePath, "/src/server/controllers/"));
 
-		controllerList.map(function loop(fileName) {
-			const filePath = path.join(this.config.basePath, "/src/server/controllers/"+fileName);		
-			this.addControllerToMap(filePath, build);
-		}.bind(this));
-		
-		if(build === true){
-			this.buildRouter();
+			controllerList.map(function loop(fileName) {
+				const filePath = path.join(this.config.basePath, "/src/server/controllers/"+fileName);		
+				this.addControllerToMap(filePath, build);
+			}.bind(this));
+			
+			if(build === true){
+				this.buildRouter();
+			}	
+		}catch(e){
+			console.log(e);
 		}
 	}
 	

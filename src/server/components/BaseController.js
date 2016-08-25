@@ -184,7 +184,20 @@ class BaseController extends BaseComponent {
 		return this.store.getState();
 	}
 	
-	render(sourceState){
+	render(passToLayoutWithoutRedux, sourceState){
+		if(passToLayoutWithoutRedux || sourceState){
+			const type = typeof passToLayoutWithoutRedux || typeof sourceState;
+			
+			if(typeof passToLayoutWithoutRedux !== 'object' || typeof sourceState !== 'object'){
+				throw new Error("Arguments of controller render must be object, "+type+" given.");
+			}
+		}
+		
+		if(passToLayoutWithoutRedux && !sourceState){
+			sourceState = passToLayoutWithoutRedux;
+			passToLayoutWithoutRedux = {};
+		}
+		
 		try{
 			let layoutSource = "";
 			let viewSource = "";
@@ -207,9 +220,10 @@ class BaseController extends BaseComponent {
 			sourceState = this.dispatchToStore(sourceState);
 			layoutSource = layoutSource.default || layoutSource;
 			viewSource = viewSource.default || viewSource;
-
+			passToLayoutWithoutRedux.reduxState = JSON.stringify(sourceState);
+			
 			const view = React.createElement(viewSource, {});
-			const layout = React.createElement(layoutSource, {reduxState: JSON.stringify(sourceState)}, view);
+			const layout = React.createElement(layoutSource, passToLayoutWithoutRedux, view);
 			const app = React.createElement(App, {}, layout);
 			const i18nextProvider = React.createElement(I18nextProvider, { i18n : this.i18nDetectorInstance }, app);
 			const provider = React.createElement(Provider, { store : this.store }, i18nextProvider);
