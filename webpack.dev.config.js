@@ -31,6 +31,11 @@ module.exports = function webpackDevConfigMain(config) {
 			library: config.name + '_[name]'
 		},
 		plugins: [
+			new webpack.DefinePlugin({
+				'process.env': {
+					NODE_ENV: JSON.stringify("dev")
+				}
+			}),
 			new webpack.HotModuleReplacementPlugin(),
 			new webpack.NoErrorsPlugin(),
 			new webpack.optimize.OccurenceOrderPlugin()
