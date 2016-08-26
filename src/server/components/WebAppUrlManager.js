@@ -50,10 +50,10 @@ function patternToMap(pattern) {
 			regexArray.push(paramReResult[2]);
 		}else{
 			if(partResult === "*"){
-				patternMap[partResult] = "(.+)";
+				patternMap[partResult] = "(|.+)";
 
 				if (partResult) {
-					regexArray.push("(.+)");
+					regexArray.push("(|.+)");
 				}
 			}else{
 				patternMap[partResult] = "(" + partResult + ")";
