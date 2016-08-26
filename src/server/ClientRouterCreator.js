@@ -101,6 +101,8 @@ class ClientRouterCreator extends BaseComponent {
 			});
 		});
 		
+		router = this.fixSort(router);
+		
 		const noHandleUrl = Object.keys(this.allUrl).filter(function loop(url){
 			return this.registedUrl.indexOf(url) === -1 && !this.allUrl[url].hasOwnProperty("ajax");
 		}.bind(this)).reduce(function loopNoHandle(newObj, url, index){
@@ -150,6 +152,7 @@ class ClientRouterCreator extends BaseComponent {
 				delete cpRuleValue.controller;
 				delete cpRuleValue.action;
 				
+				const ruleLangth = rule.split("\/").length -1;
 				const urlArray = Object.keys(cpRuleValue).reduce(function reduceCp(newObj, param, index) {
 					const value = cpRuleValue[param];
 					const fixParam = /^d(\d+)$/.test(param) ? param.replace(/^d/, "") : param;
@@ -167,7 +170,7 @@ class ClientRouterCreator extends BaseComponent {
 					return newObj;
 				}, []);
 				
-				if(urlArray.length === 1 && !/^\:/.test(urlArray[0]) && !/\*/.test(urlArray[0])){
+				if(ruleLangth > 1 && urlArray.length === 1 && !/^\:/.test(urlArray[0]) && !/\*/.test(urlArray[0])){
 					urlArray.push(urlArray[0]);
 				}
 				
@@ -194,6 +197,16 @@ class ClientRouterCreator extends BaseComponent {
 				}
 			}
 		}.bind(this));
+		
+		return router;
+	}
+	
+	fixSort(router) {
+		if(router.hasOwnProperty("/*")){
+			const target = router["/*"];
+			delete router["/*"];
+			router["/*"] = target;
+		}
 		
 		return router;
 	}
