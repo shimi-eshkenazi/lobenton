@@ -29,6 +29,8 @@ function HMR(basePath, callback){
 		
 		watch(srcDirPath, function(filename){
 			clearCache(srcDirPath, filename);
+			clearCache(srcDirPath, path.resolve(__dirname, "../../client.js"));
+			clearCache(srcDirPath, path.resolve(__dirname, "../utils/OverRideConsoleErrorUtils.js"));	
 			callback(filename);
 			
 			observers.map(function(observer){

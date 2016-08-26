@@ -1,15 +1,6 @@
 "use strict";
 
-var sourceConsoleError = console.error;
-console.error = function(){
-	if(typeof arguments[0] === 'string'){
-		if(/Unexpected key(|s)|React attempted to reuse markup in a container/g.test(arguments[0])){
-			return;
-		}
-		
-		return sourceConsoleError.apply(this, arguments);
-	}
-}
+require("./lib/utils/OverRideConsoleErrorUtils.js");
 
 exports.WrapComponent = require("./lib/client/components/WrapComponent.js").default;
 exports.languageActions = require("./lib/client/actions/language.js");
