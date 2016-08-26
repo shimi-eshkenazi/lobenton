@@ -3,11 +3,15 @@ import { createStore, applyMiddleware } from 'redux';
 import logger from 'redux-logger';
 import thunk from 'redux-thunk';
 
-export default function ConfigureStore(rootReducer, initialState) {
+export default function ConfigureStore(rootReducer, middlewares, initialState) {
+	const defaultMiddlewares = [thunk, logger()];
+	const mergedMiddlewares = defaultMiddlewares.concat(middlewares);
+	const applyMiddlewareWrap = applyMiddleware.apply(this, mergedMiddlewares);
+	
 	const store = createStore(
 		rootReducer,
 		initialState,
-		applyMiddleware(thunk, logger())
+		applyMiddlewareWrap
 	);
 
 	if (module.hot) {

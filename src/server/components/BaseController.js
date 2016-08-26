@@ -163,22 +163,19 @@ class BaseController extends BaseComponent {
 		let mainReducers = require('src/client/reducers');
 		mainReducers = mainReducers.default || mainReducers;
 
+		this.state = Object.assign(this.state, sourceState);
 		this.state["language"] = this.language;
 		this.state["history"] = {
 			prevUrl: (this.request.query.r || this.request.headers['referer'] || '/'),
 			currentUrl: this.request.url
 		};
 		
-		if(this.state.hasOwnProperty("user")){
-			sourceState.user = this.state.user;
-		}
-		
 		this.store = ConfigureStore(function rootReducer(state, action) {
 			let topResult = topReducers(state, action);
-			let mainResult = mainReducers(sourceState, action);
+			let mainResult = mainReducers(state, action);
 			let result = deepAssign(mainResult, topResult);
 			return result;
-		}.bind(this), this.state);
+		}.bind(this), [], this.state);
 		
 		return this.store.getState();
 	}
