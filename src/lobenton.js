@@ -32,6 +32,8 @@ class Lobenton {
 		let config = require(configPath);
 		config = config.default || config;
 
+		process.title = config.name;
+
 		this.creator= new ServerCreator();
 		this.creator.setConfig(config);
 		

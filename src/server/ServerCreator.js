@@ -14,10 +14,6 @@ class ServerCreator extends BaseComponent {
 	}
 	
 	initial() {
-		if(this.config.env !== "dev" && this.config.hasOwnProperty("npmLogPath")){
-			process.env.NPM_DEBUG_LOGFILE=this.config.npmLogPath;
-		}
-		
 		this.app = new AppCreator(); 
 		
 		if(this.config.env === "dev"){
