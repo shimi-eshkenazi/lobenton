@@ -9,7 +9,7 @@ class App extends Component {
 	}
 	
 	getParamMap(){
-		if(Object.keys(this.paramMap).length === 0 && typeof this.props.params !== 'undefined' && typeof this.props.location !== 'undefined'){
+		if(!this.paramMap || (Object.keys(this.paramMap).length === 0 && typeof this.props.params !== 'undefined' && typeof this.props.location !== 'undefined')){
 			this.paramMap = Object.assign({}, this.props.params, this.props.location.query);
 		}
 		
@@ -18,7 +18,7 @@ class App extends Component {
 	
 	render() {
 		return React.cloneElement(this.props.children, {
-			getParamMap : this.getParamMap
+			getParamMap : this.getParamMap.bind(this)
 		});
 	}
 }
