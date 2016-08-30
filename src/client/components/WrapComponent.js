@@ -28,3 +28,6 @@ export default function WrapComponent() {
 		return connectReturn(viewTranslate);
 	};
 };
+
+export const mapping = (func) => (reducing) => (result, input) => reducing(result, func(input));
+export const filtering = (test) => (reducing) => (result, input) => test(input) ? reducing(result, input) : result;

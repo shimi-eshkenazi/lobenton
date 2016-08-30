@@ -3,6 +3,7 @@
 import path from "path";
 import {BaseComponent} from 'lobenton';
 import Utils from "../utils/Utils.js";
+import RequireByFormat from "../utils/RequireByFormat.js";
 
 class ConponentCreator extends BaseComponent {
 	constructor(name) {
@@ -12,8 +13,21 @@ class ConponentCreator extends BaseComponent {
 	
 	initial() {
 		try{
-			let componentSource = this.config.hasOwnProperty('class') ? path.resolve(this.config["class"]) : "./components/WebApp" + this.name;	
-			let component = require(componentSource);
+			let componentSource = '';
+			let component = null;
+			
+			if(this.config.hasOwnProperty('class')){
+				if(/\./.test(this.config["class"])){
+					component = RequireByFormat(this.config["class"]);
+				}else{
+					componentSource = path.resolve(this.config["class"]);
+					component = require(componentSource);
+				}
+			}else{
+				componentSource = "./components/WebApp" + this.name;
+				component = require(componentSource);
+			}
+			
 			component = component.default || component;
 
 			let componentInstance = new component();

@@ -12,6 +12,7 @@ import Lobenton from "lobenton";
 import ErrorException from "../exceptions/ErrorException.js";
 import NotFoundException from "../exceptions/NotFoundException.js";
 import Utils from "../utils/Utils.js";
+import RequireByFormat from "../utils/RequireByFormat.js";
 
 let compiler = null;
 let devMiddleware = null;
@@ -97,7 +98,7 @@ class RequestHandler {
 		if(this.config.hasOwnProperty("middlewares")){
 			Object.keys(this.config.middlewares).map(function loopMD(middlewareName) {
 				const mdSetting = this.config.middlewares[middlewareName];
-				let mdInstance = require(mdSetting.path);
+				let mdInstance = RequireByFormat(mdSetting.path);
 				
 				mdInstance = mdInstance.default || mdInstance;
 				

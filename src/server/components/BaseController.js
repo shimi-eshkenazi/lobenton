@@ -10,6 +10,7 @@ import {Provider} from "react-redux";
 import {I18nextProvider}  from "react-i18next";
 import BaseComponent from "./BaseComponent.js";
 import FileUtil from "../../utils/FileUtil.js";
+import RequireByFormat from "../utils/RequireByFormat.js";
 import DeviceDetector from "../../utils/DeviceDetector.js";
 import I18nDetector from "../../utils/I18nDetector.js";
 import App from "../../client/components/App.js";
@@ -42,7 +43,6 @@ class BaseController extends BaseComponent {
 		this.i18nDetector= null;
 		this.i18nDetectorInstance = null;
 		this.afterContinueCallback = null;
-		
 	}
 	
 	initial(fromRequest) {
@@ -228,7 +228,7 @@ class BaseController extends BaseComponent {
 			viewSource = viewSource.default || viewSource;
 			passToLayoutWithoutRedux.reduxState = JSON.stringify(sourceState);
 			
-			const view = React.createElement(viewSource, {});
+			const view = React.createElement(viewSource, passToLayoutWithoutRedux);
 			const layout = React.createElement(layoutSource, passToLayoutWithoutRedux, view);
 			const app = React.createElement(App, {}, layout);
 			const i18nextProvider = React.createElement(I18nextProvider, { i18n : this.i18nDetectorInstance }, app);
