@@ -10,7 +10,6 @@ import {Provider} from "react-redux";
 import {I18nextProvider}  from "react-i18next";
 import BaseComponent from "./BaseComponent.js";
 import FileUtil from "../../utils/FileUtil.js";
-import RequireByFormat from "../utils/RequireByFormat.js";
 import DeviceDetector from "../../utils/DeviceDetector.js";
 import I18nDetector from "../../utils/I18nDetector.js";
 import App from "../../client/components/App.js";
@@ -226,7 +225,7 @@ class BaseController extends BaseComponent {
 			sourceState = this.dispatchToStore(sourceState);
 			layoutSource = layoutSource.default || layoutSource;
 			viewSource = viewSource.default || viewSource;
-			passToLayoutWithoutRedux.reduxState = JSON.stringify(sourceState);
+			passToLayoutWithoutRedux.reduxState = sourceState;
 			
 			const view = React.createElement(viewSource, passToLayoutWithoutRedux);
 			const layout = React.createElement(layoutSource, passToLayoutWithoutRedux, view);

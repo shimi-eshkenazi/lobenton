@@ -53,7 +53,7 @@ class FileUtil {
 	
 	static getParamFromDoc(mtd, source) {
 		let target = {};
-		const docExec = new RegExp("\\/\\*\\*.+"+mtd+"\\*(.+)\\*\\/"+mtd, "gi").exec(source);
+		const docExec = new RegExp("\\/\\*\\*.+"+mtd+"\\*(.+)\\*\\/"+mtd + "(\\s+|)\\(", "gi").exec(source);
 		
 		if(docExec !== null){
 			const docArray = typeof docExec[1] !== "undefined" ? docExec[1].split("*") : [];

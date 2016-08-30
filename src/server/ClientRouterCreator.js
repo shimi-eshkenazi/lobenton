@@ -43,22 +43,25 @@ class ClientRouterCreator extends BaseComponent {
 			if(build === true){
 				this.buildRouter();
 			}	
-		}catch(e){
-			console.log(e);
-		}
+		}catch(e){console.log(e);}
 	}
 	
 	renew(filePath) {
-		const re = new RegExp(this.config.basePath+"/src", "gi");
-		const reController = new RegExp(this.config.basePath+"/src/server/controllers", "gi");
-		
-		if(re.test(filePath)){
-			if(reController.test(filePath)){
-				this.addControllerToMap(filePath);	
+		try{
+			this.allUrl = {};
+			this.registedUrl = [];
+			
+			const re = new RegExp(this.config.basePath+"/src", "gi");
+			const reController = new RegExp(this.config.basePath+"/src/server/controllers", "gi");
+			
+			if(re.test(filePath)){
+				if(reController.test(filePath)){
+					this.addControllerToMap(filePath);	
+				}
+						
+				this.buildRouter();
 			}
-					
-			this.buildRouter();
-		}
+		}catch(e){console.log(e);}
 	}
 	
 	after(callback) {

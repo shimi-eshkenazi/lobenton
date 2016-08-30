@@ -16,7 +16,6 @@ export default function WrapComponent() {
 				try{
 					return super.render();
 				}catch(e){
-					console.log(e);
 					e.stack = e.stack.replace(/WrappedComponent/, component.name);
 					throw e;
 				}
