@@ -28,6 +28,7 @@ class BaseController extends BaseComponent {
 		this.controllerPath = null;
 		this.request = null;
 		this.response = null;
+		this.httpMethod = null;
 		this.paramMap = {};
 		this.headerMap = {};
 		this.cookieMap = {};
@@ -71,8 +72,16 @@ class BaseController extends BaseComponent {
 		this.request = request;
 	}
 	
+	getRequest () {
+		return this.request;
+	}
+	
 	setResponse (response) {
 		this.response = response;
+	}
+	
+	getResponse () {
+		return this.response;
 	}
 	
 	setView (view) {
@@ -125,6 +134,14 @@ class BaseController extends BaseComponent {
 	
 	setParamMap(paramMap) {
 		this.paramMap = paramMap;
+	}
+	
+	setNowHttpMethod(httpMethod){
+		this.httpMethod = httpMethod;
+	}
+	
+	getNowHttpMethod(){
+		return this.httpMethod;
 	}
 	
 	getParamMap() {
@@ -275,6 +292,10 @@ class BaseController extends BaseComponent {
 	
 	cookie(name, value, options) {
 		this.response.setHeader('Set-Cookie', cookie.serialize(name, String(value), options));
+	}
+	
+	clearCookie(name) {
+		this.response.setHeader('Set-Cookie', cookie.serialize(name, "", {maxAge: -900000, httpOnly: false }));
 	}
 	
 	createUrl(path) {

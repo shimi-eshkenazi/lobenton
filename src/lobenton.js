@@ -8,6 +8,7 @@ import ExtendableError from "./server/components/ExtendableError.js";
 import DeviceDetector from "./utils/DeviceDetector.js";
 import I18nDetector from "./utils/I18nDetector.js";
 import Utils from "./utils/Utils.js";
+import CookieUtil from "./utils/CookieUtil.js";
 
 class Lobenton {
 	constructor() {
@@ -71,5 +72,5 @@ class Lobenton {
 	}
 }
 
-export {BaseController, BaseComponent, ExtendableError, DeviceDetector, I18nDetector, Utils};
+export {BaseController, BaseComponent, ExtendableError, DeviceDetector, I18nDetector, Utils, CookieUtil};
 export default Lobenton;

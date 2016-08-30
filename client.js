@@ -7,3 +7,4 @@ exports.WrapComponent = require("./lib/client/components/WrapComponent.js").defa
 exports.languageActions = require("./lib/client/actions/language.js");
 exports.reducers = require("./lib/client/reducers/index.js").default;
 exports.ConfigureStore = require("./lib/client/store/ConfigureStore.js").default;
+exports.CookieUtil = require("./lib/utils/CookieUtil.js");

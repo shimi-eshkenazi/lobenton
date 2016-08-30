@@ -158,6 +158,7 @@ class RequestHandler {
 			controllerInstance.setConfig(this.config);
 			controllerInstance.setRequest(this.request);
 			controllerInstance.setResponse(this.response);
+			controllerInstance.setNowHttpMethod(this.request.method.toUpperCase());
 			controllerInstance.setControllerPath(controllerPath);
 			controllerInstance.setHeaderMap(reqHeaders);
 			controllerInstance.setCookieMap(reqCookies);
