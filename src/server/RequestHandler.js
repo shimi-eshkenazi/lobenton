@@ -135,6 +135,10 @@ class RequestHandler {
 			let controllerPath = null;
 			let controller = null;
 			let controllerInstance = null;
+			let srcIndex = 0;
+			let hasResult = false;
+			let loop = true;
+			let middleSrc = "";
 			const reqHeaders = this.request.headers || {};
 			const reqCookies = this.request.cookies || {};
 			
@@ -142,8 +146,28 @@ class RequestHandler {
 			matchResult.action = "action"+Utils.capitalizeFirstLetter(matchResult.action);
 			
 			try {
-				controllerPath = path.join(this.config.basePath, "/src/server/controllers/" + matchResult.controller);
-				controller = require(controllerPath);
+				while(loop){
+					try{
+						middleSrc = "/"+matchResult.controllerPath[srcIndex]+"/";
+						controllerPath = path.join(this.config.basePath, middleSrc + matchResult.controller);	
+						controller = require(controllerPath);
+						
+						if(controller){
+							hasResult === true;
+							loop = false;
+						}
+					}catch(e){
+						srcIndex++;	
+						
+						if(srcIndex === matchResult.controllerPath.length){
+							loop = false;
+						}
+					}
+				}
+				
+				if(hasResult === false){
+					throw new Error("Cannot find controller");
+				}
 			}catch(error){
 				if(/Cannot find/.test(error.message)) {
 					throw new NotFoundException("Cannot find controller '"+matchResult.controller+"'");

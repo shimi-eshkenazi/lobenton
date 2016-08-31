@@ -134,7 +134,8 @@ class WebAppUrlManager extends BaseComponent {
 		}
 
 		rulesRegex.map(function loopRule(rule) {
-			const testRegex = new RegExp("^"+rule+"$");
+			const newRule = rule.replace(/(.+)\\\/$/,"$1");
+			const testRegex = new RegExp("^"+newRule+"$");
 			const result = testRegex.exec(pathname);
 
 			if(result !== null && !alreadyMatched){
@@ -163,6 +164,14 @@ class WebAppUrlManager extends BaseComponent {
 		if(matchResult.paramMap.controller){
 			matchResult.controller = matchResult.paramMap.controller;
 			matchResult.action = matchResult.paramMap.action;	
+		}
+		
+		matchResult.controllerPath = [
+			'src/server/controllers'
+		];
+		
+		if(this.config.hasOwnProperty("controllerPath")){
+			matchResult.controllerPath = this.config.controllerPath
 		}
 
 		return matchResult;
