@@ -153,7 +153,7 @@ class RequestHandler {
 						controller = require(controllerPath);
 						
 						if(controller){
-							hasResult === true;
+							hasResult = true;
 							loop = false;
 						}
 					}catch(e){
