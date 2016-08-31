@@ -5,7 +5,6 @@ import path from "path";
 import FileUtil from "../utils/FileUtil.js";
 import Utils from "../utils/Utils.js";
 import ReactRouterUtil from "../utils/ReactRouterUtil.js";
-import RequireByFormat from "../utils/RequireByFormat.js";
 import Lobenton, {BaseComponent} from 'lobenton';
 
 function writeFile(path, content) {
@@ -38,8 +37,7 @@ class ClientRouterCreator extends BaseComponent {
 				let sourcePath = null;
 				
 				if(/\./.test(controllerPath)){
-					sourcePath = RequireByFormat(controllerPath);
-					console.log(sourcePath);
+					sourcePath = FileUtil.findControllerPath(this.config.basePath, controllerPath);
 				}else{
 					sourcePath = path.join(this.config.basePath, controllerPath);
 				}
@@ -47,10 +45,10 @@ class ClientRouterCreator extends BaseComponent {
 				const controllerList =  FileUtil.getFileList(sourcePath)
 				
 				controllerList.map(function loop(fileName) {
-					const filePath = path.join(this.config.basePath, "/src/server/controllers/"+fileName);		
+					const filePath = path.join(sourcePath, fileName);		
 					this.addControllerToMap(filePath, build);
 				}.bind(this));
-			});
+			}.bind(this));
 			
 			if(build === true){
 				this.buildRouter();
@@ -134,7 +132,7 @@ class ClientRouterCreator extends BaseComponent {
 			}.bind(this), []);
 		
 		if(noHandleUrl.length > 0){
-			throw new Error("Following those routes you set in '"+Lobenton.configPath+ "' are no handler:\r\n\t"+noHandleUrl.join("\r\n\t")+"\r\n\r\n");
+			console.log("Following those routes you set in '"+Lobenton.configPath+ "' are no handler:\r\n\t"+noHandleUrl.join("\r\n\t")+"\r\n\r\n");
 		}
 		
 		const str = ReactRouterUtil.createRouter(router);

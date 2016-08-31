@@ -153,8 +153,9 @@ class RequestHandler {
 						
 						if(/\./.test(middleSrc)){
 							controller = RequireByFormat(middleSrc);
-							controllerPath = FileUtil.findControllerPath(middleSrc);
-							console.log(controllerPath);
+							controller = controller[matchResult.controller];
+							controllerPath = FileUtil.findControllerPath(this.config.basePath, middleSrc);
+							controllerPath = path.join(controllerPath, matchResult.controller);
 						}else{
 							middleSrc = "/"+middleSrc+"/";
 							controllerPath = path.join(this.config.basePath, middleSrc + matchResult.controller);	

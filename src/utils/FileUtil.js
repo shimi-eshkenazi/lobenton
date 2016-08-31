@@ -2,6 +2,7 @@
 
 import fs from "fs";
 import Utils from "./Utils.js";
+import path from "path";
 
 function getControllerName(source) {
 	const docExec = new RegExp("class(\\w+)Controllerextends", "gi").exec(source);
@@ -154,9 +155,10 @@ class FileUtil {
 		return urlMap;
 	}
 	
-	static findControllerPath(expression) {
+	static findControllerPath(basePath, expression) {
 		const expressionArray = expression.split(".");
-		let sourcePath = path.join(this.config.basePath, expressionArray[0].replace(/\/.+/g,""));
+		let sourcePath = path.join(basePath, "node_modules");
+		sourcePath = path.resolve(sourcePath, expressionArray[0].replace(/\/.+/g,""));
 		sourcePath = path.resolve(sourcePath, "src/server");
 		
 		expressionArray.map(function(node, index){
