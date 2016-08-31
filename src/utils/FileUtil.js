@@ -153,6 +153,20 @@ class FileUtil {
 		
 		return urlMap;
 	}
+	
+	static findControllerPath(expression) {
+		const expressionArray = expression.split(".");
+		let sourcePath = path.join(this.config.basePath, expressionArray[0].replace(/\/.+/g,""));
+		sourcePath = path.resolve(sourcePath, "src/server");
+		
+		expressionArray.map(function(node, index){
+			if(index !== 0){
+				sourcePath = path.resolve(sourcePath, node);
+			}
+		});
+		
+		return sourcePath;
+	}
 }
 
 export default FileUtil;

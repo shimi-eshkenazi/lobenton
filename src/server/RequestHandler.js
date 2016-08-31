@@ -12,6 +12,7 @@ import Lobenton from "lobenton";
 import ErrorException from "../exceptions/ErrorException.js";
 import NotFoundException from "../exceptions/NotFoundException.js";
 import Utils from "../utils/Utils.js";
+import FileUtil from "../utils/FileUtil.js";
 import RequireByFormat from "../utils/RequireByFormat.js";
 
 let compiler = null;
@@ -52,20 +53,6 @@ function createHotMiddleware(webpackDevConfig){
 	}
 	
 	hotMiddleware = WebpackHotMiddleware(compiler);
-}
-
-function findControllerPath(expression) {
-	const expressionArray = expression.split(".");
-	let sourcePath = path.join(this.config.basePath, expressionArray[0].replace(/\/.+/g,""));
-	sourcePath = path.resolve(sourcePath, "src/server");
-	
-	expressionArray.map(function(node, index){
-		if(index !== 0){
-			sourcePath = path.resolve(sourcePath, node);
-		}
-	});
-	
-	return sourcePath;
 }
 
 class RequestHandler {
@@ -166,7 +153,7 @@ class RequestHandler {
 						
 						if(/\./.test(middleSrc)){
 							controller = RequireByFormat(middleSrc);
-							controllerPath = findControllerPath(middleSrc);
+							controllerPath = FileUtil.findControllerPath(middleSrc);
 							console.log(controllerPath);
 						}else{
 							middleSrc = "/"+middleSrc+"/";

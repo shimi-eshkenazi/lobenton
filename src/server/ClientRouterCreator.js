@@ -5,6 +5,7 @@ import path from "path";
 import FileUtil from "../utils/FileUtil.js";
 import Utils from "../utils/Utils.js";
 import ReactRouterUtil from "../utils/ReactRouterUtil.js";
+import RequireByFormat from "../utils/RequireByFormat.js";
 import Lobenton, {BaseComponent} from 'lobenton';
 
 function writeFile(path, content) {
@@ -33,12 +34,23 @@ class ClientRouterCreator extends BaseComponent {
 	
 	initial(build) {
 		try{
-			const controllerList =  FileUtil.getFileList(path.join(this.config.basePath, "/src/server/controllers/"));
-
-			controllerList.map(function loop(fileName) {
-				const filePath = path.join(this.config.basePath, "/src/server/controllers/"+fileName);		
-				this.addControllerToMap(filePath, build);
-			}.bind(this));
+			this.urlManager.config.controllerPath.map(function loopPath(controllerPath, index){
+				let sourcePath = null;
+				
+				if(/\./.test(controllerPath)){
+					sourcePath = RequireByFormat(controllerPath);
+					console.log(sourcePath);
+				}else{
+					sourcePath = path.join(this.config.basePath, controllerPath);
+				}
+				
+				const controllerList =  FileUtil.getFileList(sourcePath)
+				
+				controllerList.map(function loop(fileName) {
+					const filePath = path.join(this.config.basePath, "/src/server/controllers/"+fileName);		
+					this.addControllerToMap(filePath, build);
+				}.bind(this));
+			});
 			
 			if(build === true){
 				this.buildRouter();
