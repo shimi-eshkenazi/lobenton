@@ -125,8 +125,6 @@ class ClientRouterCreator extends BaseComponent {
 			throw new Error("Following those routes you set in '"+Lobenton.configPath+ "' are no handler:\r\n\t"+noHandleUrl.join("\r\n\t")+"\r\n\r\n");
 		}
 		
-		console.log(router);
-		
 		const str = ReactRouterUtil.createRouter(router);
 		const filepath = path.resolve(__dirname, "../../createRouter.js");
 		writeFile(filepath, str);

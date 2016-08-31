@@ -56,7 +56,11 @@ function patternToMap(pattern) {
 					regexArray.push("(|.+)");
 				}
 			}else{
-				patternMap[partResult] = "(" + partResult + ")";
+				if (/^\d+$/g.test(partResult)) {
+					patternMap["d" + partResult] = "(" + partResult + ")";
+				}else{
+					patternMap[partResult] = "(" + partResult + ")";
+				}
 
 				if (partResult) {
 					regexArray.push("(" + partResult + ")");
@@ -83,11 +87,7 @@ function toRuleMap(rule, ruleValue) {
 					let newMapping = ruleMap.mapping;
 					
 					Object.keys(ruleValueMapMapping).map(function loopParam(param) {
-						if(/^\d+$/g.test(param)){
-							newMapping["d"+param] = ruleValueMapMapping[param];
-						}else{
-							newMapping[param] = ruleValueMapMapping[param];	
-						}
+						newMapping[param] = ruleValueMapMapping[param];
 					});
 					
 					newObj[ruleMap.regex+ruleValueMapRegex] = newMapping;
