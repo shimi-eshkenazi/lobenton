@@ -54,6 +54,20 @@ function createHotMiddleware(webpackDevConfig){
 	hotMiddleware = WebpackHotMiddleware(compiler);
 }
 
+function findControllerPath(expression) {
+	const expressionArray = expression.split(".");
+	let sourcePath = path.join(this.config.basePath, expressionArray[0].replace(/\/.+/g,""));
+	sourcePath = path.resolve(sourcePath, "src/server");
+	
+	expressionArray.map(function(node, index){
+		if(index !== 0){
+			sourcePath = path.resolve(sourcePath, node);
+		}
+	});
+	
+	return sourcePath;
+}
+
 class RequestHandler {
 	constructor(config) {
 		this.config = config;
@@ -148,9 +162,17 @@ class RequestHandler {
 			try {
 				while(loop){
 					try{
-						middleSrc = "/"+matchResult.controllerPath[srcIndex]+"/";
-						controllerPath = path.join(this.config.basePath, middleSrc + matchResult.controller);	
-						controller = require(controllerPath);
+						middleSrc = matchResult.controllerPath[srcIndex];
+						
+						if(/\./.test(middleSrc)){
+							controller = RequireByFormat(middleSrc);
+							controllerPath = findControllerPath(middleSrc);
+							console.log(controllerPath);
+						}else{
+							middleSrc = "/"+middleSrc+"/";
+							controllerPath = path.join(this.config.basePath, middleSrc + matchResult.controller);	
+							controller = require(controllerPath);
+						}
 						
 						if(controller){
 							hasResult = true;

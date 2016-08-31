@@ -116,6 +116,12 @@ class WebAppUrlManager extends BaseComponent {
 		if(this.config.rules !== null) {
 			this.rulesRegex = toRuleMap("", this.config.rules);
 		}
+		
+		if(!this.config.hasOwnProperty("controllerPath")){
+			this.config.controllerPath = [
+				'src/server/controllers'
+			];
+		}
 	}
 	
 	do(pathname) {
@@ -166,13 +172,7 @@ class WebAppUrlManager extends BaseComponent {
 			matchResult.action = matchResult.paramMap.action;	
 		}
 		
-		matchResult.controllerPath = [
-			'src/server/controllers'
-		];
-		
-		if(this.config.hasOwnProperty("controllerPath")){
-			matchResult.controllerPath = this.config.controllerPath
-		}
+		matchResult.controllerPath = this.config.controllerPath;
 
 		return matchResult;
 	}
