@@ -246,7 +246,7 @@ class BaseController extends BaseComponent {
 			
 			const view = React.createElement(viewSource, passToLayoutWithoutRedux);
 			const layout = React.createElement(layoutSource, passToLayoutWithoutRedux, view);
-			const app = React.createElement(App, {}, layout);
+			const app = React.createElement(App, {params:this.getParamMap(),location:{}}, layout);
 			const i18nextProvider = React.createElement(I18nextProvider, { i18n : this.i18nDetectorInstance }, app);
 			const provider = React.createElement(Provider, { store : this.store }, i18nextProvider);
 			
