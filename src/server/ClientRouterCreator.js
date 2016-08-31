@@ -51,8 +51,16 @@ class ClientRouterCreator extends BaseComponent {
 			this.allUrl = {};
 			this.registedUrl = [];
 			
-			const re = new RegExp(this.config.basePath+"/src", "gi");
-			const reController = new RegExp(this.config.basePath+"/src/server/controllers", "gi");
+			let re = path.join(this.config.basePath, "/src");
+			let reController = path.join(this.config.basePath, "/src/server/controllers");
+
+			if(path.sep === "\\"){
+				re = re.replace(/\\/g,"\\\\");
+				reController = reController.replace(/\\/g,"\\\\");
+			}
+
+			re = new RegExp(re, "gi");
+			reController = new RegExp(reController, "gi");
 			
 			if(re.test(filePath)){
 				if(reController.test(filePath)){
@@ -116,6 +124,8 @@ class ClientRouterCreator extends BaseComponent {
 		if(noHandleUrl.length > 0){
 			throw new Error("Following those routes you set in '"+Lobenton.configPath+ "' are no handler:\r\n\t"+noHandleUrl.join("\r\n\t")+"\r\n\r\n");
 		}
+		
+		console.log(router);
 		
 		const str = ReactRouterUtil.createRouter(router);
 		const filepath = path.resolve(__dirname, "../../createRouter.js");
@@ -209,6 +219,20 @@ class ClientRouterCreator extends BaseComponent {
 			const target = router["/*"];
 			delete router["/*"];
 			router["/*"] = target;
+		}
+		
+		if(router.hasOwnProperty("/")){
+			let newRouter = Object.assign({}, router["/"]);
+			let paramFirstRouter = {};
+			
+			Object.keys(router["/"]).map(function loop(route, index){
+				if(/^\/\:.+/.test(route)){
+					paramFirstRouter[route] = router["/"][route];
+					delete newRouter[route];
+				}
+			});
+			
+			router["/"] = Object.assign(newRouter, paramFirstRouter);
 		}
 		
 		return router;
