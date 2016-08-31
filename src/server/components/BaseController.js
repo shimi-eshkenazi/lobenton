@@ -8,6 +8,7 @@ import ReactDOMServer from "react-dom/server";
 import {RouterContext} from "react-router";
 import {Provider} from "react-redux";
 import {I18nextProvider}  from "react-i18next";
+import asyncBeApi from "./asyncBeApi.js";
 import BaseComponent from "./BaseComponent.js";
 import FileUtil from "../../utils/FileUtil.js";
 import DeviceDetector from "../../utils/DeviceDetector.js";
@@ -191,7 +192,7 @@ class BaseController extends BaseComponent {
 			let mainResult = mainReducers(state, action);
 			let result = deepAssign(mainResult, topResult);
 			return result;
-		}.bind(this), [], this.state);
+		}.bind(this), [asyncBeApi(this.request)], this.state);
 		
 		return this.store.getState();
 	}
@@ -246,7 +247,12 @@ class BaseController extends BaseComponent {
 			
 			const view = React.createElement(viewSource, passToLayoutWithoutRedux);
 			const layout = React.createElement(layoutSource, passToLayoutWithoutRedux, view);
-			const app = React.createElement(App, {params:this.getParamMap(),location:{}}, layout);
+			const app = React.createElement(App, {
+				params: this.getParamMap(), 
+				location: {
+					query: this.request.query||{}
+				}
+			}, layout);
 			const i18nextProvider = React.createElement(I18nextProvider, { i18n : this.i18nDetectorInstance }, app);
 			const provider = React.createElement(Provider, { store : this.store }, i18nextProvider);
 			

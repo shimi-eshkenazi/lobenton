@@ -17,8 +17,11 @@ class App extends Component {
 	}
 	
 	render() {
-		this.props.getParamMap = this.getParamMap.bind(this);
-		return React.cloneElement(this.props.children, this.props);
+		return React.cloneElement(this.props.children, {
+			getParamMap : this.getParamMap.bind(this),
+			params: this.props.params,
+			location: this.props.location
+		});
 	}
 }
 
