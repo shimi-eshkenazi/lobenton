@@ -21,8 +21,12 @@ if(process.env.NODE_ENV === "dev"){
 		}
 	});
 }
+if(process.env.NODE_PATH){
+	process.env.NODE_PATH += ":"+dirPath;
+}else{
+	process.env.NODE_PATH = dirPath;
+}
 
-process.env.NODE_PATH += ":"+dirPath;
 require('module').Module._initPaths();
 require("babel-helper-error-stack");
 module.exports = require("./lobenton");
