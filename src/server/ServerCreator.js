@@ -37,6 +37,23 @@ class ServerCreator extends BaseComponent {
 		return this.server;
 	}
 	
+	initialSimple() {
+		this.app = new AppCreator(); 
+		
+		const argv2 = process.argv[2] || null;
+		if(this.config.env === "dev" && argv2 === "--dev"){
+			let HMR = require("./HMR.js");
+			HMR = HMR.default || HMR;
+			
+			HMR.change(function change() {
+				this.app.setConfig(this.config);
+			}.bind(this));
+		}
+		
+		this.app.setConfig(this.config);
+		this.app.initial();
+	}
+	
 	getServer() {
 		return this.server;
 	}

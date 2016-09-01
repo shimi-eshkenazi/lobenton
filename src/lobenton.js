@@ -54,6 +54,10 @@ class Lobenton {
 		return this.creator.initial();
 	}
 	
+	static runSimple(){
+		return this.creator.initialSimple();
+	}
+	
 	static getConfig(){
 		return this.creator.getConfig();
 	}
