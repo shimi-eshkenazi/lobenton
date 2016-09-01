@@ -20,19 +20,21 @@ class AppCreator extends BaseComponent {
 		this.clientRouterCreator = new ClientRouterCreator();
 		
 		const argv2 = process.argv[2] || null;
-		if(this.config.env === "dev" && argv2 === "--dev"){
-			let HMR = require("./HMR.js");
-			HMR = HMR.default || HMR;	
+		if(this.config.env === "dev"){
 			this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
 			this.clientRouterCreator.setConfig(this.config);
 			
-			HMR.change(function change(filePath) {
-				this.components = {};
-				this.createComponents();
-				this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
-				this.clientRouterCreator.setConfig(this.config);
-				this.clientRouterCreator.renew(filePath);
-			}.bind(this));
+			if(argv2 === "--dev"){
+				let HMR = require("./HMR.js");
+				HMR = HMR.default || HMR;	
+				HMR.change(function change(filePath) {
+					this.components = {};
+					this.createComponents();
+					this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
+					this.clientRouterCreator.setConfig(this.config);
+					this.clientRouterCreator.renew(filePath);
+				}.bind(this));
+			}
 			
 			this.clientRouterCreator.after(function after() {
 				new RequestHandler(this.config);	

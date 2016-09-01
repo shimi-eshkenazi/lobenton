@@ -1,6 +1,6 @@
 {
   "name": "lobenton",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "description": "Lobenton! Easy to create a web application.",
   "license": "MIT",
   "repository": {
@@ -37,7 +37,6 @@
     "acorn": "^3.3.0",
     "async": "^1.5.2",
     "async-fetch-helper": "^2.8.3",
-    "babel": "^6.5.2",
     "babel-cli": "^6.11.4",
     "babel-helper-error-stack": "^0.0.5",
     "babel-loader": "^6.2.5",
