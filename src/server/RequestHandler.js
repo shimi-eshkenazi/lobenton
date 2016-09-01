@@ -217,8 +217,12 @@ class RequestHandler {
 		const action = controllerInstance[matchResult.action];
 		const view = action.view || null;
 		
-		if(action.hasOwnProperty("method") && action.method.toUpperCase() !== this.request.method.toUpperCase()) {
+		if(typeof action.method === 'string' && action.method.toUpperCase() !== this.request.method.toUpperCase()){
 			throw new NotFoundException("Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'");
+		}else if(typeof action.method === 'object'){
+			if(action.method.indexOf(this.request.method.toUpperCase()) === -1){
+				throw new NotFoundException("Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'");
+			}
 		}
 		
 		if(action.hasOwnProperty("login")) {

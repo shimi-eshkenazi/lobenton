@@ -79,7 +79,16 @@ class FileUtil {
 							target[key] = docToPatam[1] || false;
 							break;
 						case 'method':
-							target[key] = docToPatam[1] || "GET";
+							let value = docToPatam[1];
+							
+							if(/\,/.test(value)){
+								value = value.split(",");
+								value = value.map(function(v){
+									return v.toUpperCase();
+								});
+							}
+							
+							target[key] = value || "GET";
 							break;
 						default:
 							target[key] = docToPatam[1] || null;
