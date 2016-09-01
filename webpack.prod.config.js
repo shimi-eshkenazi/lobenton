@@ -7,7 +7,7 @@ var rootPath = path.resolve(__dirname, path.relative(__dirname,''));
 var bundle = {
 	bundle: [
 		'babel-polyfill',
-		'./src/client/index.js'
+		'./src/client/index.js',
 	],
 	en:['./src/client/locales/en/en.js'],
 	zhTW: ['./src/client/locales/zhTW/zhTW.js']
@@ -15,28 +15,27 @@ var bundle = {
 
 module.exports = function webpackBundleConfigMain(config) {
 	return {
-		entry: bundle,
 		debug: true,
+		context: rootPath,
 		devtool: 'eval',
+		entry: bundle,
 		resolve: {
 			root: [ rootPath ],
 			extensions: ["", ".js", ".jsx"]
 		},
 		output: {
 			path: path.join(rootPath, '/public/build/'),
+			publicPath: '/build',
 			filename: config.name + '_[name].js',
 			libraryTarget: 'var',
 			library: config.name + '_[name]'
 		},
-		// externals: {
-		// 	//"c_platform": "window.c_platform_bundle",
-		// 	"src/configs/client":"window.configs"
-		// },
 		plugins: [
-			// new webpack.ProvidePlugin({
-			// 	//"c_platform": "c_platform",
-			// 	"src/configs/client":"src/configs/client"
-			// }),
+			new webpack.DefinePlugin({
+				'process.env': {
+					NODE_ENV: JSON.stringify("lab")
+				}
+			}),
 			new webpack.optimize.UglifyJsPlugin({
 				compress: {
 					warnings: false
