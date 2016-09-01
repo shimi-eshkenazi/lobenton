@@ -2,12 +2,13 @@
 
 var AsyncFetchHelper = require('async-fetch-helper');
 var Promise = require('bluebird');
-var clientConfig = require('src/configs/client').default;
-var asyncFetchHelper = new AsyncFetchHelper({
-	apiUrl : "http:"+clientConfig.remoteDataUrl
-});
+var asyncFetchHelper = null;
 
-function asyncBeApi(req){
+function asyncBeApi(config, req){
+	asyncFetchHelper = new AsyncFetchHelper({
+		apiUrl : "http:"+config.params.remoteDataUrl
+	});
+	
 	return function storeHandle(store){
 		return function nextHandle(next){
 	 		return function actionHandle(action){

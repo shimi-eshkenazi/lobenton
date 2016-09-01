@@ -192,7 +192,7 @@ class BaseController extends BaseComponent {
 			let mainResult = mainReducers(state, action);
 			let result = deepAssign(mainResult, topResult);
 			return result;
-		}.bind(this), [asyncBeApi(this.request)], this.state);
+		}.bind(this), [asyncBeApi(this.config, this.request)], this.state);
 		
 		return this.store.getState();
 	}
