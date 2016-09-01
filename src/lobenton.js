@@ -32,17 +32,20 @@ class Lobenton {
 		
 		let config = require(configPath);
 		config = config.default || config;
-
+		
 		process.title = config.name;
 
 		this.creator= new ServerCreator();
 		this.creator.setConfig(config);
 		
-		HMR(config.basePath, function change() {
-			config = require(configPath);
-			config = config.default || config;
-			this.creator.setConfig(config);
-		}.bind(this));
+		const argv2 = process.argv[2] || null;
+		if(config.env === "dev" && argv2 === "--dev"){
+			HMR(config.basePath, function change() {
+				config = require(configPath);
+				config = config.default || config;
+				this.creator.setConfig(config);
+			}.bind(this));
+		}
 		
 		return Lobenton;
 	}

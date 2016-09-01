@@ -19,7 +19,8 @@ class AppCreator extends BaseComponent {
 		this.createComponents();
 		this.clientRouterCreator = new ClientRouterCreator();
 		
-		if(this.config.env === "dev"){
+		const argv2 = process.argv[2] || null;
+		if(this.config.env === "dev" && argv2 === "--dev"){
 			let HMR = require("./HMR.js");
 			HMR = HMR.default || HMR;	
 			this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
