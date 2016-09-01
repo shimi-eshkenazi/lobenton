@@ -17,10 +17,10 @@ class AppCreator extends BaseComponent {
 		ClientRouterCreator = ClientRouterCreator.default || ClientRouterCreator;
 		
 		this.createComponents();
-		this.clientRouterCreator = new ClientRouterCreator();
 		
 		const argv2 = process.argv[2] || null;
 		if(this.config.env === "dev"){
+			this.clientRouterCreator = new ClientRouterCreator();
 			this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
 			this.clientRouterCreator.setConfig(this.config);
 			
@@ -41,8 +41,6 @@ class AppCreator extends BaseComponent {
 			}.bind(this));
 			this.clientRouterCreator.initial(true);
 		}else{
-			this.clientRouterCreator.setConfig(this.config);
-			this.clientRouterCreator.initial();
 			new RequestHandler(this.config);
 		}
 	}

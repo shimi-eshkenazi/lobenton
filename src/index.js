@@ -1,4 +1,5 @@
 Error.stackTraceLimit = 50;
+process.env.BABEL_DISABLE_CACHE=1;
 
 var path = require("path");
 var dirPath = path.resolve(__dirname, path.relative(__dirname, ''));
