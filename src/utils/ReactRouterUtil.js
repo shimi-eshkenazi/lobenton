@@ -66,6 +66,9 @@ class ReactRouterUtil {
 					if(subRoute === "/"){
 						this.mainRouterArray.push('\t\t\t\t<IndexRoute component={'+routeValue.viewName+'} '+paramStr+'/>');
 					}else{
+						if(/\/$/.test(subRoute) && subRoute !== '/'){
+							subRoute = subRoute.replace(/\/$/,'');
+						}
 						this.mainRouterArray.push('\t\t\t\t<Route path="'+subRoute+'" component={'+routeValue.viewName+'} '+paramStr+'/>');
 					}
 				}.bind(this));
