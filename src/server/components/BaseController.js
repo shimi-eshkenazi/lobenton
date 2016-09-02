@@ -14,7 +14,6 @@ import FileUtil from "../../utils/FileUtil.js";
 import DeviceDetector from "../../utils/DeviceDetector.js";
 import I18nDetector from "../../utils/I18nDetector.js";
 import App from "../../client/components/App.js";
-import topReducers from '../../client/reducers/index.js';
 import ConfigureStore from "../../client/store/ConfigureStore.js";
 
 let Lobenton = null;
@@ -187,12 +186,7 @@ class BaseController extends BaseComponent {
 			currentUrl: this.request.url
 		};
 		
-		this.store = ConfigureStore(function rootReducer(state, action) {
-			let topResult = topReducers(state, action);
-			let mainResult = mainReducers(state, action);
-			let result = deepAssign(topResult, mainResult);
-			return result;
-		}.bind(this), [asyncBeApi(this.config, this.request)], this.state);
+		this.store = ConfigureStore(mainReducers, [asyncBeApi(this.config, this.request)], this.state);
 		
 		return this.store.getState();
 	}
