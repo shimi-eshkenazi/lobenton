@@ -80,7 +80,6 @@ module.exports = function webpackDevConfigMain(config) {
           test: /\.gif$/,
           loader: 'file'
 	      },
-	      ,
 	      {
 	        test: /\.svg$/,
 	        loader: 'file'

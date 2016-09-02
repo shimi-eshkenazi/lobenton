@@ -190,7 +190,7 @@ class BaseController extends BaseComponent {
 		this.store = ConfigureStore(function rootReducer(state, action) {
 			let topResult = topReducers(state, action);
 			let mainResult = mainReducers(state, action);
-			let result = deepAssign(mainResult, topResult);
+			let result = deepAssign(topResult, mainResult);
 			return result;
 		}.bind(this), [asyncBeApi(this.config, this.request)], this.state);
 		

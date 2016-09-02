@@ -10,7 +10,7 @@ if(path.sep === "/"){
 	rootDir = dirPath.replace(new RegExp(".+\\"+path.sep),'');
 }
 
-if(process.env.NODE_ENV === "dev"){
+//if(process.env.NODE_ENV === "dev"){
 	var re = new RegExp("lobenton|"+rootDir+"\/src");
 	require('babel-core/register')({
 		ignore: function(filename){
@@ -21,7 +21,7 @@ if(process.env.NODE_ENV === "dev"){
 			}
 		}
 	});
-}
+//}
 if(process.env.NODE_PATH){
 	process.env.NODE_PATH += ":"+dirPath;
 }else{

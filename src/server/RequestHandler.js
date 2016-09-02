@@ -119,7 +119,7 @@ class RequestHandler {
 	}
 	
 	runPrecessChain(callback) {	
-		async.each(this.processChain, function middleware(mw, cb){
+		async.eachSeries(this.processChain, function middleware(mw, cb){
 			mw(this.request, this.response, cb);
 		}.bind(this), callback);
 	}

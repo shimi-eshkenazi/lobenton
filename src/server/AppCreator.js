@@ -41,6 +41,7 @@ class AppCreator extends BaseComponent {
 			}.bind(this));
 			this.clientRouterCreator.initial(true);
 		}else{
+			require("lobenton/createRouter");
 			new RequestHandler(this.config);
 		}
 	}
