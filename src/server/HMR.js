@@ -28,14 +28,18 @@ function HMR(basePath, callback){
 		isListen = true;
 		
 		watch(srcDirPath, function(filename){
-			clearCache(srcDirPath, filename);
-			clearCache(srcDirPath, path.resolve(__dirname, "../../client.js"));
-			clearCache(srcDirPath, path.resolve(__dirname, "../utils/OverRideConsoleErrorUtils.js"));	
-			callback(filename);
-			
-			observers.map(function(observer){
-				observer(filename);
-			});
+			try{
+				clearCache(srcDirPath, filename);
+				clearCache(srcDirPath, path.resolve(__dirname, "../../client.js"));
+				clearCache(srcDirPath, path.resolve(__dirname, "../utils/OverRideConsoleErrorUtils.js"));	
+				callback(filename);
+				
+				observers.map(function(observer){
+					observer(filename);
+				});
+			}catch(e){
+				console.log(e);
+			}
 		});
 	}
 };
