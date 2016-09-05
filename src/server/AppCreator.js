@@ -16,7 +16,7 @@ class AppCreator extends BaseComponent {
 		let ClientRouterCreator = require('./ClientRouterCreator.js');
 		ClientRouterCreator = ClientRouterCreator.default || ClientRouterCreator;
 		
-		this.createComponents();
+		this.createComponents(true);
 		
 		const argv2 = process.argv[2] || null;
 		if(this.config.env === "dev"){
@@ -29,7 +29,7 @@ class AppCreator extends BaseComponent {
 				HMR = HMR.default || HMR;	
 				HMR.change(function change(filePath) {
 					this.components = {};
-					this.createComponents();
+					this.createComponents(false);
 					this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
 					this.clientRouterCreator.setConfig(this.config);
 					this.clientRouterCreator.renew(filePath);
@@ -47,12 +47,14 @@ class AppCreator extends BaseComponent {
 		}
 	}
 	
-	createComponents() {
+	createComponents(noLog) {
 		if(this.config.components){
 			for (let componentName in this.config.components){
-				const componentSetting = this.config.components[componentName];
-				componentSetting.basePath = this.config.basePath;
-				this.components[Utils.capitalizeFirstLetter(componentName)] = this.createComponent(componentName, componentSetting);
+				if(componentName !== 'log' || (componentName === 'log' && noLog === true)){
+					const componentSetting = this.config.components[componentName];
+					componentSetting.basePath = this.config.basePath;
+					this.components[Utils.capitalizeFirstLetter(componentName)] = this.createComponent(componentName, componentSetting);
+				}
 			}
 		}
 	}
