@@ -41,7 +41,7 @@ function patternToMap(pattern) {
 			const paramRe = new RegExp("^\\:(.+)(\\(.+\\))");
 			
 			if(!paramRe.test(partResult)){
-				partResult = partResult+"(\w+)";
+				partResult = partResult+"(\\w+)";
 			}
 			
 			const paramReResult = paramRe.exec(partResult);

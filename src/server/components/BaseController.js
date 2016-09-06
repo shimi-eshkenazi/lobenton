@@ -338,7 +338,7 @@ class BaseController extends BaseComponent {
 		this.sendBody(status, "");
 	}
 	
-	forward(path, data) {
+	forwardUrl(path, data) {
 		if(!Lobenton){
 			Lobenton = require("lobenton");
 			Lobenton = Lobenton.default || Lobenton;
@@ -347,6 +347,17 @@ class BaseController extends BaseComponent {
 		path = "/"+path || "";
 		data = data || {};
 		Lobenton.getApp().forwardBridge(path, data, this.request, this.response);
+	}
+	
+	forward(path, data) {
+		/*if(!Lobenton){
+			Lobenton = require("lobenton");
+			Lobenton = Lobenton.default || Lobenton;
+		}
+
+		path = "/"+path || "";
+		data = data || {};
+		Lobenton.getApp().forwardBridge(path, data, this.request, this.response);*/
 	}
 	
 	beforeAction() {}
