@@ -109,24 +109,13 @@ class ClientRouterCreator extends BaseComponent {
 		
 	buildRouter() {
 		let self = this;
-		let router = {};
+		let router = {subRules:{}};
 		
-		Object.keys(self.controllerMap).map(function loopFile(filePath) {
-			const urlPattern = self.controllerMap[filePath].urlPattern;
-			
-			Object.keys(urlPattern).map(function loopPattern(url) {
-				const pattern = urlPattern[url];
-				const result = self.findMatchRoute(router, url, pattern);
-				
-				router = Object.assign(router, result);
-			});
-		});
-		
-		router = this.fixSort(router);
+		this.findMatchRoute(router, this.urlManager.config.rules);
 		
 		const noHandleUrl = Object.keys(this.allUrl).filter(function loop(url){
-			return this.registedUrl.indexOf(url) === -1 && !this.allUrl[url].hasOwnProperty("ajax");
-		}.bind(this)).reduce(function loopNoHandle(newObj, url, index){
+				return this.allUrl[url] !== null && this.registedUrl.indexOf(url) === -1;
+			}.bind(this)).reduce(function loopNoHandle(newObj, url, index){
 				newObj.push(url + " => " + Utils.capitalizeFirstLetter(this.allUrl[url].controller) + "Controller");
 				return newObj;
 			}.bind(this), []);
@@ -144,106 +133,77 @@ class ClientRouterCreator extends BaseComponent {
 		}
 	}
 	
-	findMatchRoute(router, url, pattern) {
-		let hasRoot = false;
+	findMatchRoute(router, currentMap) {
+		let hasExtend = currentMap.hasOwnProperty("extend") ? true : false;
 		
-		if(this.urlManager.rulesRegex["\\/"]){
-			hasRoot = true;
-			
-			if(!router.hasOwnProperty("/")){
-				router["/"] = {};
-			}	
-		}
-		
-		Object.keys(this.urlManager.rulesRegex).map(function loopRule(rule) {
-			const ruleValue = this.urlManager.rulesRegex[rule];
-			const ruleTarget = ruleValue["controller"]+"/"+ruleValue["action"];
-			
-			if(!this.allUrl.hasOwnProperty(ruleTarget)){
-				this.allUrl[ruleTarget] = ruleValue;
+		Object.keys(currentMap).map(function loop(pattern){
+			if(pattern === 'extend'){
+				return;
 			}
 			
-			if(ruleTarget === url){
-				if(this.registedUrl.indexOf(ruleTarget) === -1){
-					this.registedUrl.push(ruleTarget);
-				}
-				
-				let cpRuleValue = Object.assign({},ruleValue);
-				
-				delete cpRuleValue.controller;
-				delete cpRuleValue.action;
-				
-				const ruleLangth = rule.split("\/").length -1;
-				const urlArray = Object.keys(cpRuleValue).reduce(function reduceCp(newObj, param, index) {
-					const value = cpRuleValue[param];
-					const fixParam = /^d(\d+)$/.test(param) ? param.replace(/^d/, "") : param;
-					
-					if(value === "("+fixParam+")"){
-						newObj.push(fixParam);
-					}else{
-						if(fixParam === "*"){
-							newObj.push(fixParam);
-						}else{
-							newObj.push(":" + fixParam);	
-						}
-					}
-					
-					return newObj;
-				}, []);
-				
-				if(ruleLangth > 1 && urlArray.length === 1 && !/^\:/.test(urlArray[0]) && !/\*/.test(urlArray[0])){
-					urlArray.push(urlArray[0]);
-				}
-				
-				let first = "";
-				
-				if(hasRoot === false){
-					first = urlArray.shift();
-					
-					if(!router.hasOwnProperty("/"+first)){
-						router["/"+first] = {};
-					}
-				}
-					
-				let newUrl = "/"+urlArray.join("/");
-				
-				if(newUrl === "//"){
-					newUrl = "/";
-				}
+			const patternValue = currentMap[pattern];
+			pattern = /^\//.test(pattern) ? pattern : "/"+pattern;
+		
+			let result = null;
+			let regexArray = [];
+			let regexStr = '';
+			const re = new RegExp("\\/(((?!\\/).)*)", "gi");
+
+			while(result = re.exec(pattern)){
+				let partResult = result[1];
+				partResult = partResult.replace(/\(.+/g, '');
+				regexArray.push(partResult);
+			}
 			
-				router["/"+first][newUrl] = {
-					view: pattern.view,
-					viewName: FileUtil.getViewName(pattern.view),
-					docParams: pattern.docParams
+			regexStr = "/"+regexArray.join("/");
+		
+			if(typeof patternValue === 'string'){
+				if(!this.allUrl.hasOwnProperty(patternValue)){
+					this.allUrl[patternValue] = null;
 				}
+				
+				Object.keys(this.controllerMap).map(function loopFile(filePath) {
+					const urlPattern = this.controllerMap[filePath].urlPattern;
+					
+					Object.keys(urlPattern).map(function loopPattern(controllerAction) {
+						let controllerActionValue = urlPattern[controllerAction];
+						
+						if(this.allUrl.hasOwnProperty(controllerAction)){
+							this.allUrl[controllerAction] = controllerActionValue;
+						}
+						
+						if(controllerAction === patternValue){
+							if(this.registedUrl.indexOf(patternValue) === -1){
+								this.registedUrl.push(patternValue);
+							}
+							
+							if(pattern === '/' && hasExtend){
+								router.pattern = {
+									view: controllerActionValue.view,
+									viewName: FileUtil.getViewName(controllerActionValue.view),
+									docParams: controllerActionValue.docParams
+								};
+							}else{
+								router.subRules[regexStr] = {
+									pattern: {
+										view: controllerActionValue.view,
+										viewName: FileUtil.getViewName(controllerActionValue.view),
+										docParams: controllerActionValue.docParams
+									},
+									subRules: null 
+								}
+							}
+						}
+					}.bind(this));
+				}.bind(this));
+			}else{
+				router.subRules[regexStr] = {
+					pattern: "",
+					subRules: {}
+				};
+				this.findMatchRoute(router.subRules[regexStr], patternValue);
 			}
 		}.bind(this));
-		
-		return router;
-	}
-	
-	fixSort(router) {
-		if(router.hasOwnProperty("/*")){
-			const target = router["/*"];
-			delete router["/*"];
-			router["/*"] = target;
-		}
-		
-		if(router.hasOwnProperty("/")){
-			let newRouter = Object.assign({}, router["/"]);
-			let paramFirstRouter = {};
-			
-			Object.keys(router["/"]).map(function loop(route, index){
-				if(/^\/\:.+/.test(route)){
-					paramFirstRouter[route] = router["/"][route];
-					delete newRouter[route];
-				}
-			});
-			
-			router["/"] = Object.assign(newRouter, paramFirstRouter);
-		}
-		
-		return router;
 	}
 }
 

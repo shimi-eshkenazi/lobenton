@@ -37,45 +37,56 @@ class ReactRouterUtil {
 		this.router = router;
 	}
 	
-	transformToFile() {
-		if(this.router !== null) {
-			Object.keys(this.router).map(function loopRouteFirst(routeFirst) {
-				const routeFirstValue = this.router[routeFirst];
-				
-				if(this.mainRouterArray.indexOf('\t\t\t<Route path="'+routeFirst+'" component={App}>') === -1){
-					this.mainRouterArray.push('\t\t\t<Route path="'+routeFirst+'" component={App}>');
+	toJsxRoute(target, prefixName, tab) {
+		let isAddTab = false;
+		prefixName = prefixName || '';
+		
+		Object.keys(target).map(function loopRoute(route) {
+			const routeValue = target[route];
+			const docParams = routeValue.pattern ? Object.keys(routeValue.pattern.docParams) : [];
+			const paramStr = docParams.reduce(function reduceParam(str, param, index) {
+				if([true, false, "true", "false"].indexOf(routeValue.pattern.docParams[param]) !== -1){
+					str += param+"={"+routeValue.pattern.docParams[param]+"} ";	
+				}else{
+					str += param+'="'+routeValue.pattern.docParams[param]+'" ';	
 				}
 				
-				Object.keys(routeFirstValue).map(function loopSubRoute(subRoute){
-					const routeValue = routeFirstValue[subRoute];
-					const docParams = Object.keys(routeValue.docParams);
-					const paramStr = docParams.reduce(function reduceParam(str, param, index) {
-						if([true, false, "true", "false"].indexOf(routeValue.docParams[param]) !== -1){
-							str += param+"={"+routeValue.docParams[param]+"} ";	
-						}else{
-							str += param+'="'+routeValue.docParams[param]+'" ';	
-						}
-						
-						return str;
-					}, "");
-					
-					if(this.importArray.indexOf('import '+routeValue.viewName+' from "'+routeValue.view+'";') === -1){
-						this.importArray.push('import '+routeValue.viewName+' from "'+routeValue.view+'";');	
-					}
-					
-					if(subRoute === "/"){
-						this.mainRouterArray.push('\t\t\t\t<IndexRoute component={'+routeValue.viewName+'} '+paramStr+'/>');
+				return str;
+			}, "");
+			
+			if(routeValue.pattern !== '' && routeValue.subRules !== null){
+				if(this.importArray.indexOf('import '+routeValue.pattern.viewName+' from "'+routeValue.pattern.view+'";') === -1){
+					this.importArray.push('import '+routeValue.pattern.viewName+' from "'+routeValue.pattern.view+'";');	
+				}
+				
+				this.mainRouterArray.push(tab+'<Route path="'+(prefixName+route)+'" component={'+routeValue.pattern.viewName+'} '+paramStr+'>');
+				this.toJsxRoute(routeValue.subRules, "", tab+"\t");
+				this.mainRouterArray.push(tab+'</Route>');
+			}else if(routeValue.pattern !== '' && routeValue.subRules === null){
+				if(this.importArray.indexOf('import '+routeValue.pattern.viewName+' from "'+routeValue.pattern.view+'";') === -1){
+					this.importArray.push('import '+routeValue.pattern.viewName+' from "'+routeValue.pattern.view+'";');	
+				}
+				
+				if(prefixName+route === "/"){
+					this.mainRouterArray.push(tab+'<IndexRoute component={'+routeValue.pattern.viewName+'} '+paramStr+'/>');
+				}else{
+					if(route === "/"){
+						this.mainRouterArray.push(tab+'<Route path="'+(prefixName)+'" component={'+routeValue.pattern.viewName+'} '+paramStr+'/>');	
 					}else{
-						if(/\/$/.test(subRoute) && subRoute !== '/'){
-							subRoute = subRoute.replace(/\/$/,'');
-						}
-						this.mainRouterArray.push('\t\t\t\t<Route path="'+subRoute+'" component={'+routeValue.viewName+'} '+paramStr+'/>');
+						this.mainRouterArray.push(tab+'<Route path="'+(prefixName+route)+'" component={'+routeValue.pattern.viewName+'} '+paramStr+'/>');
 					}
-				}.bind(this));
-				
-				this.mainRouterArray.push('\t\t\t</Route>');
-				
-			}.bind(this));
+				}
+			}else if(routeValue.pattern === '' && routeValue.subRules !== null){
+				this.toJsxRoute(routeValue.subRules, route, tab);
+			}
+		}.bind(this));
+	}
+	
+	transformToFile() {
+		if(this.router !== null) {
+			this.mainRouterArray.push('\t\t\t<Route path="/" component={App}>');
+			this.toJsxRoute(this.router.subRules, "", '\t\t\t\t');
+			this.mainRouterArray.push('\t\t\t</Route>');
 		}
 	}
 	

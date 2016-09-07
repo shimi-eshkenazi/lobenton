@@ -18,7 +18,7 @@ class Lobenton {
 	
 	static createApplication(configPath) {
 		if(process.env.NODE_ENV !== 'dev'){
-			configPath = configPath.replace(/^src/, "lib");
+			//configPath = configPath.replace(/^src/, "lib");
 		}
 		
 		this.configPath = configPath;

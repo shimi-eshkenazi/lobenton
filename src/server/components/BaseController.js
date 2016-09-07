@@ -32,6 +32,7 @@ class BaseController extends BaseComponent {
 		this.paramMap = {};
 		this.headerMap = {};
 		this.cookieMap = {};
+		this.setCookie
 		this.store = null;
 		this.state = {};
 		this.tmp = {};
@@ -186,6 +187,10 @@ class BaseController extends BaseComponent {
 			currentUrl: this.request.url
 		};
 		
+		if(/layout/g.test(this.state.history.prevUrl)){
+			this.state.history.prevUrl = "/";
+		}
+		
 		this.store = ConfigureStore(mainReducers, [asyncBeApi(this.config, this.request)], this.state);
 		
 		return this.store.getState();
@@ -291,11 +296,20 @@ class BaseController extends BaseComponent {
 	}
 	
 	cookie(name, value, options) {
-		this.response.setHeader('Set-Cookie', cookie.serialize(name, String(value), options));
+		let cookieList = this.response.getHeader('Set-Cookie');
+		options = options || {};
+		
+		if(cookieList){
+			cookieList.push(cookie.serialize(name, String(value), options));
+		}else{
+			cookieList = [cookie.serialize(name, String(value), options)];
+		}
+		
+		this.response.setHeader('Set-Cookie', cookieList);
 	}
 	
 	clearCookie(name) {
-		this.response.setHeader('Set-Cookie', cookie.serialize(name, "", {maxAge: -900000, httpOnly: false }));
+		this.cookie(name, "", {maxAge: -900000, httpOnly: false });
 	}
 	
 	createUrl(path) {
