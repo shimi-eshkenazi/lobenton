@@ -10,7 +10,7 @@ while(arg = args[index]){
 	var flag = arg.split('=')[0];
 
   switch (flag) {
-    case '--create-reate-router':console.log("OK");
+    case '--create-reate-router':
     	if(config === false){
     		args.push('--create-reate-router');
     	}else if(config !== null && config !== false){

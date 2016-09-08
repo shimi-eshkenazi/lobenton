@@ -19,6 +19,7 @@ class AppCreator extends BaseComponent {
 		this.createComponents(true);
 		
 		const argv2 = process.argv[2] || null;
+		
 		if(this.config.env === "dev"){
 			this.clientRouterCreator = new ClientRouterCreator();
 			this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
@@ -36,10 +37,13 @@ class AppCreator extends BaseComponent {
 				}.bind(this));
 			}
 			
-			this.clientRouterCreator.after(function after() {
-				require("lobenton/createRouter");
-				new RequestHandler(this.config);	
-			}.bind(this));
+			if(argv2 !== "--create-reate-router"){
+				this.clientRouterCreator.after(function after() {
+					require("lobenton/createRouter");
+					new RequestHandler(this.config);	
+				}.bind(this));
+			}
+			
 			this.clientRouterCreator.initial(true);
 		}else{
 			require("lobenton/createRouter");
