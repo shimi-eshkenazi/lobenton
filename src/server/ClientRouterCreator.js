@@ -7,13 +7,16 @@ import Utils from "../utils/Utils.js";
 import ReactRouterUtil from "../utils/ReactRouterUtil.js";
 import Lobenton, {BaseComponent} from 'lobenton';
 
-function writeFile(path, content) {
+function writeFile(path, content, callback) {
 	fs.writeFile(path, content, function(err) {
 		if(err) {
-			return console.log(err);
+			console.log(err)
+			callback(err);
+			return;
 		}
 
 		console.log("The react router file was created at "+path+"!");
+		callback();
 	});
 }
 
@@ -126,11 +129,15 @@ class ClientRouterCreator extends BaseComponent {
 		
 		const str = ReactRouterUtil.createRouter(router);
 		const filepath = path.resolve(__dirname, "../../createRouter.js");
-		writeFile(filepath, str);
 		
-		if(this.callback){
-			this.callback();
-		}
+		writeFile(filepath, str, (err) => {
+			if(err){
+				throw err;
+			}
+			if(this.callback){
+				this.callback();
+			}
+		});
 	}
 	
 	findMatchRoute(router, currentMap) {

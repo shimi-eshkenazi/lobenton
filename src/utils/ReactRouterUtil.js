@@ -16,14 +16,14 @@ class ReactRouterUtil {
 			'',
 			'import {App} from "lobenton/client";',
 			'import React from "react";',
-			'import { Router, Route, IndexRoute, browserHistory } from "react-router";'
+			'import { Router, Route, IndexRoute } from "react-router";'
 		];
 		this.mainBeforeArray = [
 			'',
 			'export const ts = '+ ((new Date()).getTime()) + ";",
-			'export default function createRouter() {',
+			'export default function createRouter(history) {',
 			'\treturn (',
-			'\t\t<Router history={browserHistory}>'
+			'\t\t<Router history={history}>'
 		];
 		this.mainRouterArray = [];
 		this.mainAfterArray = [
@@ -60,7 +60,7 @@ class ReactRouterUtil {
 				}
 				
 				this.mainRouterArray.push(tab+'<Route path="'+(prefixName+route)+'" component={'+routeValue.pattern.viewName+'} '+paramStr+'>');
-				this.toJsxRoute(routeValue.subRules, "", tab+"\t");
+				this.toJsxRoute(routeValue.subRules, (prefixName+route), tab+"\t");
 				this.mainRouterArray.push(tab+'</Route>');
 			}else if(routeValue.pattern !== '' && routeValue.subRules === null){
 				if(this.importArray.indexOf('import '+routeValue.pattern.viewName+' from "'+routeValue.pattern.view+'";') === -1){

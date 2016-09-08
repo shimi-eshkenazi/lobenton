@@ -5,9 +5,10 @@ import React from "react";
 import deepAssign from "deep-assign";
 import { combineReducers } from 'redux';
 import ReactDOMServer from "react-dom/server";
-import {RouterContext} from "react-router";
+import {match, RouterContext, useRouterHistory} from "react-router";
 import {Provider} from "react-redux";
 import {I18nextProvider}  from "react-i18next";
+import { createMemoryHistory, useQueries } from 'history';
 import asyncBeApi from "./asyncBeApi.js";
 import BaseComponent from "./BaseComponent.js";
 import FileUtil from "../../utils/FileUtil.js";
@@ -16,6 +17,7 @@ import I18nDetector from "../../utils/I18nDetector.js";
 import App from "../../client/components/App.js";
 import ConfigureStore from "../../client/store/ConfigureStore.js";
 
+let createRouter = null;
 let Lobenton = null;
 
 class BaseController extends BaseComponent {
@@ -44,6 +46,10 @@ class BaseController extends BaseComponent {
 		this.i18nDetector= null;
 		this.i18nDetectorInstance = null;
 		this.afterContinueCallback = null;
+		
+		if(!createRouter){
+			createRouter = require("lobenton/createRouter").default;
+		}
 	}
 	
 	initial(fromRequest) {
@@ -223,6 +229,9 @@ class BaseController extends BaseComponent {
 		try{
 			let layoutSource = "";
 			let viewSource = "";
+			let history = useRouterHistory(useQueries(createMemoryHistory))();
+			let location = history.createLocation(this.request.url);
+			let routes = createRouter(history);
 			
 			sourceState = sourceState || {};
 			
@@ -231,44 +240,45 @@ class BaseController extends BaseComponent {
 			}else{
 				throw new Error("Layout is not defined on action : " + this.layout);
 			}
-			
-			if(this.view){
-				viewSource = require(this.view);
-			}else{
-				throw new Error("View is not defined on action : " + this.action);
-			}
-			
+
 			sourceState = this.beforeRender(sourceState);
 			sourceState = this.dispatchToStore(sourceState);
 			layoutSource = layoutSource.default || layoutSource;
-			viewSource = viewSource.default || viewSource;
 			passToLayoutWithoutRedux.reduxState = sourceState;
 			
-			const view = React.createElement(viewSource, passToLayoutWithoutRedux);
-			const layout = React.createElement(layoutSource, passToLayoutWithoutRedux, view);
-			const app = React.createElement(App, {
-				params: this.getParamMap(), 
-				location: {
-					query: this.request.query||{}
+			match({ routes, location }, function matchHandle(error, redirectLocation, renderProps){
+				try{
+					if (redirectLocation) {
+						this.redirect(301, redirectLocation.pathname + redirectLocation.search);
+					} else if (error) {
+						this.forwardUrl("error/500", error);
+					} else if (!renderProps) {
+						this.forwardUrl("error/404");
+					} else {
+						const routerContext = React.createElement(RouterContext, Object.assign({}, renderProps));
+						const layout = React.createElement(layoutSource, passToLayoutWithoutRedux, routerContext);
+						const i18nextProvider = React.createElement(I18nextProvider, { i18n : this.i18nDetectorInstance }, layout);
+						const provider = React.createElement(Provider, { store : this.store }, i18nextProvider);
+						
+						let html = ReactDOMServer.renderToString(provider);
+						html = '<!DOCTYPE lang="en">'+html;
+						
+						if(this.i18nDetector.getNeedSetCookie() === true){
+							this.cookie('locale', I18nDetector.ZHTW, { maxAge: 900000, httpOnly: false });
+						}
+						
+						html = this.afterRender(html);
+						this.response.setHeader('Content-Type', 'text/html');
+						this.response.setHeader('X-Powered-By', 'Lobenton');
+						this.sendBody(200, html);
+					}
+				}catch(jsxError){
+					this.forwardUrl("error/500", jsxError);
 				}
-			}, layout);
-			const i18nextProvider = React.createElement(I18nextProvider, { i18n : this.i18nDetectorInstance }, app);
-			const provider = React.createElement(Provider, { store : this.store }, i18nextProvider);
-			
-			let html = ReactDOMServer.renderToString(provider);
-			html = '<!DOCTYPE lang="en">'+html;
-			
-			if(this.i18nDetector.getNeedSetCookie() === true){
-				this.cookie('locale', I18nDetector.ZHTW, { maxAge: 900000, httpOnly: false });
-			}
-			
-			html = this.afterRender(html);
-			this.response.setHeader('Content-Type', 'text/html');
-			this.response.setHeader('X-Powered-By', 'Lobenton');
-			this.sendBody(200, html);
-		}catch(error){
-			console.log(error);
-			throw error;
+			}.bind(this));
+		}catch(renderError){
+			console.log(renderError);
+			throw renderError;
 		}
 	}
 	
