@@ -25,7 +25,7 @@ module.exports = function webpackBundleConfigMain(config) {
 		},
 		output: {
 			path: path.join(rootPath, '/public/build/'),
-			publicPath: '/build',
+			publicPath: '',
 			filename: config.name + '_[name].js',
 			libraryTarget: 'var',
 			library: config.name + '_[name]'
