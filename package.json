@@ -1,6 +1,6 @@
 {
   "name": "lobenton",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "description": "Lobenton! Easy to create a web application.",
   "license": "MIT",
   "author": "Rex Chen <rexhome7326@gmail.com>",
@@ -21,6 +21,7 @@
     "bin",
     "lib",
     "src",
+    "plugins",
     "client.js",
     "webpack.dev.config.js",
     "webpack.prod.config.js"
