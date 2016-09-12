@@ -53,6 +53,7 @@ class BaseController extends BaseComponent {
 	}
 	
 	initial(fromRequest) {
+		const localesUrl = this.config.isStart ? "lib/client/locales" : "src/client/locales";
 		FileUtil.fixControllerMethod(this);
 		
 		if(fromRequest === true){
@@ -64,7 +65,7 @@ class BaseController extends BaseComponent {
 			
 			this.i18nDetector = new I18nDetector();
 			this.i18nDetector.setDefaultLanguage(I18nDetector.ZHTW);
-			this.i18nDetector.setLocalesPath("src/client/locales");
+			this.i18nDetector.setLocalesPath(localesUrl);
 			this.i18nDetector.detect(this.cookieMap);
 			this.i18nDetectorInstance = this.i18nDetector.getRealInstance();
 			this.language = this.i18nDetector.getLanguage();
@@ -183,7 +184,8 @@ class BaseController extends BaseComponent {
 	}
 	
 	dispatchToStore(sourceState) {
-		let mainReducers = require('src/client/reducers');
+		const reducerUrl = this.config.isStart ? "lib/client/reducers" : "src/client/reducers";
+		let mainReducers = require(reducerUrl);
 		mainReducers = mainReducers.default || mainReducers;
 
 		this.state = Object.assign(this.state, sourceState);
@@ -236,6 +238,9 @@ class BaseController extends BaseComponent {
 			sourceState = sourceState || {};
 			
 			if(this.layout){
+				if(this.config.isStart){
+					this.layout = this.layout.replace(/^src\//, "lib/");
+				}
 				layoutSource = require(this.layout);
 			}else{
 				throw new Error("Layout is not defined on action : " + this.layout);

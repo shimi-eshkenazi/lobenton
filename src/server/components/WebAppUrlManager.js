@@ -4,6 +4,8 @@ import deepAssign from "deep-assign";
 import Utils from "../../utils/Utils.js";
 import {BaseComponent} from 'lobenton';
 
+let isStart = JSON.parse(process.env.npm_config_argv).original.slice(-1).pop() === "start";
+
 function targetToMap(ruleValue) {
 	let result = null;
 	let targetMap = {};
@@ -92,7 +94,6 @@ function toRuleMap(rule, ruleValue) {
 					
 					newObj[ruleMap.regex+ruleValueMapRegex] = newMapping;
 				}else{
-					//console.log(ruleValue);
 					newObj[ruleValueMapRegex] = ruleValueMapMapping;	
 				}
 			});
@@ -119,9 +120,15 @@ class WebAppUrlManager extends BaseComponent {
 		}
 		
 		if(!this.config.hasOwnProperty("controllerPath")){
-			this.config.controllerPath = [
-				'src/server/controllers'
-			];
+			if(isStart){
+				this.config.controllerPath = [
+					'lib/server/controllers'
+				];
+			}else{
+				this.config.controllerPath = [
+					'src/server/controllers'
+				];
+			}
 		}
 	}
 	
