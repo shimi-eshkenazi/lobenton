@@ -166,9 +166,9 @@ class FileUtil {
 	
 	static findControllerPath(basePath, expression) {
 		const expressionArray = expression.split(".");
-		let sourcePath = path.join(basePath, "node_modules");
-		sourcePath = path.resolve(sourcePath, expressionArray[0].replace(/\/.+/g,""));
-		sourcePath = path.resolve(sourcePath, "src/server");
+		let sourcePath = path.join(basePath, "./node_modules");
+		sourcePath = path.resolve(sourcePath, "./"+expressionArray[0].replace(/\/.+/g,""));
+		sourcePath = path.resolve(sourcePath, "./src/server");
 		
 		expressionArray.map(function(node, index){
 			if(index !== 0){

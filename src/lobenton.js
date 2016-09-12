@@ -10,6 +10,8 @@ import I18nDetector from "./utils/I18nDetector.js";
 import Utils from "./utils/Utils.js";
 import CookieUtil from "./utils/CookieUtil.js";
 
+let isStart = JSON.parse(process.env.npm_config_argv).original.slice(-1).pop() === "start";
+
 class Lobenton {
 	constructor() {
 		this.configPath = "";
@@ -17,10 +19,6 @@ class Lobenton {
 	}
 	
 	static createApplication(configPath) {
-		if(process.env.NODE_ENV !== 'dev'){
-			configPath = configPath.replace(/^src/, "lib");
-		}
-		
 		this.configPath = configPath;
 		
 		require('css-modules-require-hook')({
@@ -32,17 +30,18 @@ class Lobenton {
 		
 		let config = require(configPath);
 		config = config.default || config;
+		config.isStart = isStart;
 		
 		process.title = config.name;
 
 		this.creator= new ServerCreator();
 		this.creator.setConfig(config);
 		
-		const argv2 = process.argv[2] || null;
-		if(config.env === "dev" && argv2 === "--dev"){
+		if(process.env.NODE_ENV === "dev" && !isStart){
 			HMR(config.basePath, function change() {
 				config = require(configPath);
 				config = config.default || config;
+				config.isStart = isStart;
 				this.creator.setConfig(config);
 			}.bind(this));
 		}

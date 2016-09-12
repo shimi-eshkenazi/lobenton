@@ -3,6 +3,7 @@
 import RequestHandler from "./RequestHandler.js";
 import ConponentCreator from "./ConponentCreator";
 import {BaseComponent} from 'lobenton';
+import ClientRouterCreator from './ClientRouterCreator.js';
 import Utils from "../utils/Utils.js";
 
 class AppCreator extends BaseComponent {
@@ -13,42 +14,40 @@ class AppCreator extends BaseComponent {
 	}
 	
 	initial () {
-		let ClientRouterCreator = require('./ClientRouterCreator.js');
-		ClientRouterCreator = ClientRouterCreator.default || ClientRouterCreator;
-		
 		this.createComponents(true);
 		
-		const argv2 = process.argv[2] || null;
-		
-		if(this.config.env === "dev"){
+		if(process.env.NODE_ENV === "dev" && !this.config.isStart){
 			this.clientRouterCreator = new ClientRouterCreator();
 			this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
 			this.clientRouterCreator.setConfig(this.config);
 			
-			if(argv2 === "--dev"){
-				let HMR = require("./HMR.js");
-				HMR = HMR.default || HMR;	
-				HMR.change(function change(filePath) {
-					this.components = {};
-					this.createComponents(false);
-					this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
-					this.clientRouterCreator.setConfig(this.config);
-					this.clientRouterCreator.renew(filePath);
-				}.bind(this));
-			}
-			
-			if(argv2 !== "--create-reate-router"){
-				this.clientRouterCreator.after(function after() {
-					require("lobenton/createRouter");
-					new RequestHandler(this.config);	
-				}.bind(this));
-			}
-			
-			this.clientRouterCreator.initial(true);
+			let HMR = require("./HMR.js");
+			HMR = HMR.default || HMR;	
+			HMR.change(function change(filePath) {
+				this.components = {};
+				this.createComponents(false);
+				this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
+				this.clientRouterCreator.setConfig(this.config);
+				this.clientRouterCreator.renew(filePath);
+			}.bind(this));
+
+			this.clientRouterCreator.after(function after() {
+				require("lobenton/createRouter");
+				new RequestHandler(this.config);	
+			}.bind(this));
+			this.clientRouterCreator.initial();
 		}else{
 			require("lobenton/createRouter");
 			new RequestHandler(this.config);
 		}
+	}
+	
+	initialSimple() {
+		this.createComponents(true);
+		this.clientRouterCreator = new ClientRouterCreator();
+		this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
+		this.clientRouterCreator.setConfig(this.config);
+		this.clientRouterCreator.initial();
 	}
 	
 	createComponents(noLog) {

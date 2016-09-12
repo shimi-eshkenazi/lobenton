@@ -16,8 +16,7 @@ class ServerCreator extends BaseComponent {
 	initial() {
 		this.app = new AppCreator(); 
 		
-		const argv2 = process.argv[2] || null;
-		if(this.config.env === "dev" && argv2 === "--dev"){
+		if(process.env.NODE_ENV === "dev" && !this.config.isStart){
 			let HMR = require("./HMR.js");
 			HMR = HMR.default || HMR;
 			
@@ -40,7 +39,7 @@ class ServerCreator extends BaseComponent {
 	initialSimple() {
 		this.app = new AppCreator(); 
 		this.app.setConfig(this.config);
-		this.app.initial();
+		this.app.initialSimple();
 	}
 	
 	getServer() {

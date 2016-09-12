@@ -69,8 +69,7 @@ class RequestHandler {
 			bodyParser.urlencoded({extended: true})
 		];
 		
-		const argv2 = process.argv[2] || null;
-		if(this.config.env === "dev" && argv2 === "--dev"){		
+		if(process.env.NODE_ENV === "dev" && !this.config.isStart){
 			let webpackDevConfigMain = require(this.config.webpackDevConfig);
 			webpackDevConfigMain = webpackDevConfigMain.default || webpackDevConfigMain;
 			

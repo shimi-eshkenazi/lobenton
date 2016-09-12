@@ -45,7 +45,7 @@ module.exports = function webpackDevConfigMain(config) {
 				{
 					test: /\.js$/,
 					loader: 'babel-loader',
-					exclude: /node_modules\/(?!lobenton)/,
+					exclude: /node_modules/,//\/(?!lobenton)
 					include: rootPath,
 					query: {
 						plugins: [

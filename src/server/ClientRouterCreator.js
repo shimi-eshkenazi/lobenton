@@ -2,22 +2,27 @@
 
 import fs from "fs";
 import path from "path";
+import {transform} from "babel-core";
 import FileUtil from "../utils/FileUtil.js";
 import Utils from "../utils/Utils.js";
 import ReactRouterUtil from "../utils/ReactRouterUtil.js";
 import Lobenton, {BaseComponent} from 'lobenton';
 
 function writeFile(path, content, callback) {
-	fs.writeFile(path, content, function(err) {
-		if(err) {
-			console.log(err)
-			callback(err);
-			return;
-		}
+	let babelrc = FileUtil.getFile(".babelrc");
+	babelrc = JSON.parse(babelrc);
+	const result = transform(content,babelrc);
+	const err = fs.writeFileSync(path, result.code);
+	
+	if(err) {
+		console.log(err)
+		callback(err);
+		return;
+	}
 
-		console.log("The react router file was created at "+path+"!");
-		callback();
-	});
+	console.log("The react router file was created at "+path+"!");
+	callback();
+	return;
 }
 
 class ClientRouterCreator extends BaseComponent {
@@ -34,7 +39,7 @@ class ClientRouterCreator extends BaseComponent {
 		this.urlManager = urlManager;
 	}
 	
-	initial(build) {
+	initial() {
 		try{
 			this.urlManager.config.controllerPath.map(function loopPath(controllerPath, index){
 				let sourcePath = null;
@@ -49,13 +54,11 @@ class ClientRouterCreator extends BaseComponent {
 				
 				controllerList.map(function loop(fileName) {
 					const filePath = path.join(sourcePath, fileName);		
-					this.addControllerToMap(filePath, build);
+					this.addControllerToMap(filePath);
 				}.bind(this));
 			}.bind(this));
 			
-			if(build === true){
-				this.buildRouter();
-			}	
+			this.buildRouter();
 		}catch(e){console.log(e);}
 	}
 	
@@ -89,10 +92,10 @@ class ClientRouterCreator extends BaseComponent {
 		this.callback = callback;
 	}
 	
-	addControllerToMap(filePath, build) {
+	addControllerToMap(filePath) {
 		const fileSource = FileUtil.getFile(filePath);
 		
-		if(build === true && FileUtil.isControllerHasLayoutAndView(fileSource)){
+		if(FileUtil.isControllerHasLayoutAndView(fileSource)){
 			if(FileUtil.isSourceHasLoginTrue(fileSource)){
 				try{
 					Lobenton.getComponent("loginFilter");

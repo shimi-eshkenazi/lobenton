@@ -25,3 +25,5 @@ while(arg = args[index]){
   
   index++;
 }
+
+process.exit();
