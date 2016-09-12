@@ -38,6 +38,40 @@ exports.default = function (babel) {
             }
           });
         }
+      },
+      ArrayExpression(path, state) {
+        if(checkFlag === true && path.node.elements.length > 0){
+          var opts = Object.keys(state.opts);
+          
+          path.node.elements.map(function loop(node, index){
+            if(opts.length > 0){
+              opts.map(function loopOpts(source){
+                var replaceTo = state.opts[source];
+                var re1 = new RegExp(source, "gi");
+                
+                if(node.type === "StringLiteral" && re1.test(node.value)){
+                  node.value = node.value.replace(re1, replaceTo);
+                }
+              });
+            }
+          });
+        }
+      },
+      ObjectProperty(path, state) {
+        if(checkFlag === true){
+          var opts = Object.keys(state.opts);
+          
+          if(opts.length > 0){
+            opts.map(function loopOpts(source){
+              var replaceTo = state.opts[source];
+              var re1 = new RegExp(source, "gi");
+              
+              if(path.node.value.type === "StringLiteral" && re1.test(path.node.value.value)){
+                path.node.value.value = path.node.value.value.replace(re1, replaceTo);
+              }
+            });
+          }
+        }
       }
     }
   };
