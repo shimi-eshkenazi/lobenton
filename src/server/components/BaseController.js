@@ -54,6 +54,8 @@ class BaseController extends BaseComponent {
 	
 	initial(fromRequest) {
 		const localesUrl = this.config.isStart ? "lib/client/locales" : "src/client/locales";
+		this.controllerPath = this.controllerPath.replace(/\/lib\//g,"/src/");
+		
 		FileUtil.fixControllerMethod(this);
 		
 		if(fromRequest === true){

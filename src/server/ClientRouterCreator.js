@@ -47,6 +47,7 @@ class ClientRouterCreator extends BaseComponent {
 				if(/\./.test(controllerPath)){
 					sourcePath = FileUtil.findControllerPath(this.config.basePath, controllerPath);
 				}else{
+					controllerPath = controllerPath.replace(/^lib\//, "src/");
 					sourcePath = path.join(this.config.basePath, controllerPath);
 				}
 				

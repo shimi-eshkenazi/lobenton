@@ -13,16 +13,7 @@ if(path.sep === "/"){
 }
 
 if(process.env.NODE_ENV === "dev" && !isStart){
-	var re = new RegExp("lobenton|"+rootDir+"\/src");
-	require('babel-core/register')({
-		ignore: function(filename){
-			if(re.test(filename)){
-				return false;
-			}else{
-				return true;
-			}
-		}
-	});
+	require('babel-core/register')
 }
 
 if(process.env.NODE_PATH){
