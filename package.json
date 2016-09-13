@@ -1,6 +1,6 @@
 {
   "name": "lobenton",
-  "version": "0.14.3",
+  "version": "0.15.0",
   "description": "Lobenton! Easy to create a web application.",
   "license": "MIT",
   "author": "Rex Chen <rexhome7326@gmail.com>",
@@ -50,6 +50,7 @@
     "babel-plugin-react-transform": "^2.0.2",
     "babel-plugin-rewire": "^1.0.0-rc-6",
     "babel-plugin-transform-object-rest-spread": "^6.8.0",
+    "babel-plugin-replace-import-src-to-where": "^0.0.2",
     "babel-polyfill": "^6.13.0",
     "babel-preset-es2015": "^6.13.1",
     "babel-preset-es2015-loose": "^7.0.0",

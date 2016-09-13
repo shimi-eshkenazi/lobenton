@@ -2,17 +2,14 @@
 
 import fs from "fs";
 import path from "path";
-import {transform} from "babel-core";
 import FileUtil from "../utils/FileUtil.js";
 import Utils from "../utils/Utils.js";
 import ReactRouterUtil from "../utils/ReactRouterUtil.js";
 import Lobenton, {BaseComponent} from 'lobenton';
 
 function writeFile(path, content, callback) {
-	let babelrc = FileUtil.getFile(".babelrc");
-	babelrc = JSON.parse(babelrc);
-	const result = transform(content,babelrc);
-	const err = fs.writeFileSync(path, result.code);
+	const result = FileUtil.compiler(content);
+	const err = FileUtil.writeFile(path, result);
 	
 	if(err) {
 		console.log(err)
@@ -47,6 +44,7 @@ class ClientRouterCreator extends BaseComponent {
 				if(/\./.test(controllerPath)){
 					sourcePath = FileUtil.findControllerPath(this.config.basePath, controllerPath);
 				}else{
+					//for parser, so we need to use source
 					controllerPath = controllerPath.replace(/^lib\//, "src/");
 					sourcePath = path.join(this.config.basePath, controllerPath);
 				}
@@ -68,6 +66,7 @@ class ClientRouterCreator extends BaseComponent {
 			this.allUrl = {};
 			this.registedUrl = [];
 			
+			// HMR watching src, so we got src file path when change
 			let re = path.join(this.config.basePath, "/src");
 			let reController = path.join(this.config.basePath, "/src/server/controllers");
 

@@ -7,8 +7,6 @@ import {BaseComponent} from 'lobenton';
 class ServerCreator extends BaseComponent {
 	constructor() {
 		super();
-		this.startTime = (new Date()).getTime();
-		this.endTime = null;
 		this.server = null;
 		this.app = null;
 	}
@@ -71,16 +69,10 @@ class ServerCreator extends BaseComponent {
 				console.log(error);
 				throw error;
 		}
-		
-		throw error;
 	}
 	
 	onListening(){
-		this.endTime = (new Date()).getTime();
 		console.log("Listening on port: " + this.config.port);
-		console.log("Need Time : " + ((this.endTime-this.startTime)/1000));
-		this.startTime = null;
-		this.endTime = null;
 	}
 }
 

@@ -17,7 +17,6 @@ import I18nDetector from "../../utils/I18nDetector.js";
 import App from "../../client/components/App.js";
 import ConfigureStore from "../../client/store/ConfigureStore.js";
 
-let createRouter = null;
 let Lobenton = null;
 
 class BaseController extends BaseComponent {
@@ -30,6 +29,7 @@ class BaseController extends BaseComponent {
 		this.controllerPath = null;
 		this.request = null;
 		this.response = null;
+		this.reactRouter = null;
 		this.httpMethod = null;
 		this.paramMap = {};
 		this.headerMap = {};
@@ -46,14 +46,9 @@ class BaseController extends BaseComponent {
 		this.i18nDetector= null;
 		this.i18nDetectorInstance = null;
 		this.afterContinueCallback = null;
-		
-		if(!createRouter){
-			createRouter = require("lobenton/createRouter").default;
-		}
 	}
 	
 	initial(fromRequest) {
-		const localesUrl = this.config.isStart ? "lib/client/locales" : "src/client/locales";
 		this.controllerPath = this.controllerPath.replace(/\/lib\//g,"/src/");
 		
 		FileUtil.fixControllerMethod(this);
@@ -67,7 +62,7 @@ class BaseController extends BaseComponent {
 			
 			this.i18nDetector = new I18nDetector();
 			this.i18nDetector.setDefaultLanguage(I18nDetector.ZHTW);
-			this.i18nDetector.setLocalesPath(localesUrl);
+			this.i18nDetector.setLocalesPath("lib/client/locales");
 			this.i18nDetector.detect(this.cookieMap);
 			this.i18nDetectorInstance = this.i18nDetector.getRealInstance();
 			this.language = this.i18nDetector.getLanguage();
@@ -92,6 +87,10 @@ class BaseController extends BaseComponent {
 	
 	getResponse () {
 		return this.response;
+	}
+	
+	setReactRouter(reactRouter) {
+		this.reactRouter = reactRouter;
 	}
 	
 	setView (view) {
@@ -186,8 +185,7 @@ class BaseController extends BaseComponent {
 	}
 	
 	dispatchToStore(sourceState) {
-		const reducerUrl = this.config.isStart ? "lib/client/reducers" : "src/client/reducers";
-		let mainReducers = require(reducerUrl);
+		let mainReducers = require("lib/client/reducers");
 		mainReducers = mainReducers.default || mainReducers;
 
 		this.state = Object.assign(this.state, sourceState);
@@ -235,14 +233,12 @@ class BaseController extends BaseComponent {
 			let viewSource = "";
 			let history = useRouterHistory(useQueries(createMemoryHistory))();
 			let location = history.createLocation(this.request.url);
-			let routes = createRouter(history);
+			let routes = this.reactRouter(history);
 			
 			sourceState = sourceState || {};
 			
 			if(this.layout){
-				if(this.config.isStart){
-					this.layout = this.layout.replace(/^src\//, "lib/");
-				}
+				this.layout = this.layout.replace(/^src\//, "lib/");
 				layoutSource = require(this.layout);
 			}else{
 				throw new Error("Layout is not defined on action : " + this.layout);

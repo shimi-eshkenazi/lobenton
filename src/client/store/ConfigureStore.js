@@ -15,8 +15,8 @@ export default function ConfigureStore(rootReducer, middlewares, initialState) {
 	);
 
 	if (module.hot) {
-		module.hot.accept('src/client/reducers', () => {
-			const nextReducer = require('src/client/reducers').default;
+		module.hot.accept('lib/client/reducers', () => {
+			const nextReducer = require('lib/client/reducers').default;
 			store.replaceReducer(nextReducer)
 		})
 	}

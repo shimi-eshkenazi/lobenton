@@ -120,15 +120,9 @@ class WebAppUrlManager extends BaseComponent {
 		}
 		
 		if(!this.config.hasOwnProperty("controllerPath")){
-			if(isStart){
-				this.config.controllerPath = [
-					'lib/server/controllers'
-				];
-			}else{
-				this.config.controllerPath = [
-					'src/server/controllers'
-				];
-			}
+			this.config.controllerPath = [
+				'lib/server/controllers'
+			];
 		}
 	}
 	

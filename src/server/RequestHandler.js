@@ -56,7 +56,8 @@ function createHotMiddleware(webpackDevConfig){
 }
 
 class RequestHandler {
-	constructor(config) {
+	constructor(config, reactRouter) {
+		this.reactRouter = reactRouter;
 		this.config = config;
 		this.request = null;
 		this.response = null;
@@ -190,6 +191,7 @@ class RequestHandler {
 			controllerInstance = new controller();
 			controllerInstance.setController(matchResult.controller);
 			controllerInstance.setConfig(this.config);
+			controllerInstance.setReactRouter(this.reactRouter);
 			controllerInstance.setRequest(this.request);
 			controllerInstance.setResponse(this.response);
 			controllerInstance.setNowHttpMethod(this.request.method.toUpperCase());

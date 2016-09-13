@@ -3,6 +3,7 @@
 import fs from "fs";
 import Utils from "./Utils.js";
 import path from "path";
+import {transform, transformFileSync} from "babel-core";
 
 function getControllerName(source) {
 	const docExec = new RegExp("class(\\w+)Controllerextends", "gi").exec(source);
@@ -38,15 +39,27 @@ function isSourceHasView(source) {
 }
 
 class FileUtil {
-	static getFile(path) {
-		let buffer = fs.readFileSync(path, "utf8");
+	static compiler(content){
+		return transform(content, babelrc);
+	}
+	
+	static compilerFile(src) {
+		return transformFileSync(src, babelrc);
+	}
+	
+	static writeFile(src, result) {
+		return fs.writeFileSync(src, result.code);
+	}
+	
+	static getFile(src) {
+		let buffer = fs.readFileSync(src, "utf8");
 		buffer = buffer.replace(/\s/g,"");
 		return buffer;
 	}
 	
-	static getFileList(path) {
+	static getFileList(src) {
 		try {
-			return fs.readdirSync(path, "utf8")
+			return fs.readdirSync(src, "utf8")
 		}catch(e){
 			throw e;
 		}
@@ -179,5 +192,8 @@ class FileUtil {
 		return sourcePath;
 	}
 }
+
+let babelrc = FileUtil.getFile(".babelrc");
+babelrc = JSON.parse(babelrc);
 
 export default FileUtil;

@@ -9,6 +9,7 @@ import Utils from "../utils/Utils.js";
 class AppCreator extends BaseComponent {
 	constructor () {
 		super();
+		this.reactRouter = null;
 		this.components = {};
 		this.clientRouterCreator = null;
 	}
@@ -32,13 +33,13 @@ class AppCreator extends BaseComponent {
 			}.bind(this));
 
 			this.clientRouterCreator.after(function after() {
-				require("lobenton/createRouter");
-				new RequestHandler(this.config);	
+				this.reactRouter = require("lobenton/createRouter.js").default;
+				new RequestHandler(this.config, this.reactRouter);
 			}.bind(this));
 			this.clientRouterCreator.initial();
 		}else{
-			require("lobenton/createRouter");
-			new RequestHandler(this.config);
+			this.reactRouter = require("lobenton/createRouter.js").default;
+			new RequestHandler(this.config, this.reactRouter);
 		}
 	}
 	
@@ -113,7 +114,7 @@ class AppCreator extends BaseComponent {
 	}
 	
 	handleRequest(request, response, data, errorObject) {
-		let handler = new RequestHandler(this.config);
+		let handler = new RequestHandler(this.config, this.reactRouter);
 		handler.setRequest(request);
 		handler.setResponse(response);
 		handler.exec(data, errorObject);

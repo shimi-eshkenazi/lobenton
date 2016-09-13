@@ -2,16 +2,20 @@
 
 var path = require("path");
 var webpack = require("webpack");
+var WebpackShellPlugin = require("./plugins/WebpackShellPlugin");
+var TimerUtil = require("./lib/utils/TimerUtil").default;
 var rootPath = path.resolve(__dirname, path.relative(__dirname,''));
 var bundle = {
 	bundle: [
 		'babel-polyfill',
 		'webpack-hot-middleware/client',
-		'./src/client/index.js'
+		'./lib/client/index.js'
 	],
-	en:['./src/client/locales/en/en.js'],
-	zhTW: ['./src/client/locales/zhTW/zhTW.js']
+	en:['./lib/client/locales/en/en.js'],
+	zhTW: ['./lib/client/locales/zhTW/zhTW.js']
 };
+var isEchoStart = false;
+var isEchoEnd = false;
 
 module.exports = function webpackDevConfigMain(config) {
 	return {
@@ -38,7 +42,25 @@ module.exports = function webpackDevConfigMain(config) {
 			}),
 			new webpack.HotModuleReplacementPlugin(),
 			new webpack.NoErrorsPlugin(),
-			new webpack.optimize.OccurenceOrderPlugin()
+			new webpack.optimize.OccurenceOrderPlugin(),
+			new WebpackShellPlugin({ 
+				onBuildStart: [function(){
+					if(!isEchoStart){
+						//console.log('webpack start');
+						isEchoStart = true;
+					}
+				}],
+				onBuildEnd: [function(){
+					if(!isEchoEnd){
+						//console.log('webpack end');
+						setTimeout(function(){
+							TimerUtil.end("Load lobenton");
+						}, 0);
+						
+						isEchoEnd = true;
+					}
+				}] 
+	    })
 		],
 		module: {
 			loaders: [

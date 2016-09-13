@@ -9,6 +9,7 @@ import DeviceDetector from "./utils/DeviceDetector.js";
 import I18nDetector from "./utils/I18nDetector.js";
 import Utils from "./utils/Utils.js";
 import CookieUtil from "./utils/CookieUtil.js";
+import TimerUtil from "./utils/TimerUtil.js";
 
 let isStart = JSON.parse(process.env.npm_config_argv).original.slice(-1).pop() === "start";
 
@@ -19,6 +20,8 @@ class Lobenton {
 	}
 	
 	static createApplication(configPath) {
+		TimerUtil.start("Load lobenton");
+		
 		this.configPath = configPath;
 		
 		require('css-modules-require-hook')({
