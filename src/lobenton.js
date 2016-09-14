@@ -81,5 +81,5 @@ class Lobenton {
 	}
 }
 
-export {BaseController, BaseComponent, ExtendableError, DeviceDetector, I18nDetector, Utils, CookieUtil};
+export {BaseController, BaseComponent, ExtendableError, DeviceDetector, I18nDetector, Utils, CookieUtil, TimerUtil, HMR};
 export default Lobenton;

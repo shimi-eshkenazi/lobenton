@@ -57,8 +57,16 @@ function HMR(basePath, callback){
 	}
 };
 
-HMR.change = function(callback){
+HMR.change = function change(callback){
 	observers.push(callback);
+};
+
+HMR.clean = function clean(regex){
+	Object.keys(require.cache).map(function(filename){
+		if(regex.test(filename)){
+			require.cache[filename] = null;
+		}
+	});
 };
 
 module.exports = HMR;
