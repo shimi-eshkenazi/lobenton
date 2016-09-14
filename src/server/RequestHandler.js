@@ -204,7 +204,7 @@ class RequestHandler {
 				this.loadAction(matchResult, controllerInstance);		
 			}catch(actionError) {
 				if(/Cannot/.test(actionError.message) && !actionError.hasOwnProperty("code")){
-					throw new NotFoundException("Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'");
+					throw new NotFoundException("Load action Error : Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'");
 				}else{
 					throw new ErrorException(actionError);
 				}
@@ -219,10 +219,10 @@ class RequestHandler {
 		const view = action.view || null;
 		
 		if(typeof action.method === 'string' && action.method.toUpperCase() !== this.request.method.toUpperCase()){
-			throw new NotFoundException("Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'");
+			throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'");
 		}else if(typeof action.method === 'object'){
 			if(action.method.indexOf(this.request.method.toUpperCase()) === -1){
-				throw new NotFoundException("Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'");
+				throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'");
 			}
 		}
 		
@@ -295,9 +295,9 @@ class RequestHandler {
 		const pathname = Utils.fixUrl(this.request).pathname;
 		
 		if(/.+\..+$/.test(pathname)){
-			throw new NotFoundException("Cannot find file '"+pathname+"'");
+			throw new NotFoundException("File match error : Cannot find file '"+pathname+"'");
 		}else{
-			throw new NotFoundException("Cannot find route '"+pathname+"'");
+			throw new NotFoundException("Route match error : Cannot find route '"+pathname+"'");
 		}
 	}
 	
@@ -334,6 +334,10 @@ class RequestHandler {
 				
 				this.loadController(matchResult);
 			}catch(error){
+				if(this.config.env === 'dev' && !/match error/gi.test(error.message)){
+					console.log(error);
+				}
+				this.request.method = "GET";
 				let targetError = error.code ? error : new ErrorException(error);
 				let defaultErrorController = "/"+this.config.defaultErrorController || "";
 				Lobenton.getApp().forwardBridge(defaultErrorController, {}, this.request, this.response, targetError);

@@ -1,5 +1,6 @@
 "use strict";
 
+import path from "path";
 import cookie from "cookie";
 import React from "react";
 import deepAssign from "deep-assign";
@@ -31,6 +32,7 @@ class BaseController extends BaseComponent {
 		this.response = null;
 		this.reactRouter = null;
 		this.httpMethod = null;
+		this.httpCode = null;
 		this.paramMap = {};
 		this.headerMap = {};
 		this.cookieMap = {};
@@ -49,7 +51,11 @@ class BaseController extends BaseComponent {
 	}
 	
 	initial(fromRequest) {
-		this.controllerPath = this.controllerPath.replace(/\/lib\//g,"/src/");
+		if (path.sep === "\\") {
+        this.controllerPath = this.controllerPath.replace(/\\lib\\/g,"\\src\\");
+    }else{
+        this.controllerPath = this.controllerPath.replace(/\/lib\//g,"/src/");
+    }
 		
 		FileUtil.fixControllerMethod(this);
 		
@@ -101,6 +107,10 @@ class BaseController extends BaseComponent {
 		this.filterResult = filterResult;
 	}
 	
+	setHttpCode(httpCode){
+		this.httpCode = httpCode;
+	}
+	
 	set(key, value) {
 		this.tmp[key] = value;
 	}
@@ -145,16 +155,16 @@ class BaseController extends BaseComponent {
 		this.paramMap = paramMap;
 	}
 	
+	getParamMap() {
+		return this.paramMap;
+	}
+	
 	setNowHttpMethod(httpMethod){
 		this.httpMethod = httpMethod;
 	}
 	
 	getNowHttpMethod(){
 		return this.httpMethod;
-	}
-	
-	getParamMap() {
-		return this.paramMap;
 	}
 	
 	getProtocol() {
@@ -168,7 +178,12 @@ class BaseController extends BaseComponent {
 	}
 	
 	sendBody(statusCode, body){
-		this.response.statusCode = statusCode;
+		if(this.httpCode !== null){
+			this.response.statusCode = this.httpCode;
+		}else{
+			this.response.statusCode = statusCode;
+		}
+		
 		this.response.end(body, "UTF-8");
 	}
 	
@@ -238,6 +253,7 @@ class BaseController extends BaseComponent {
 			sourceState = sourceState || {};
 			
 			if(this.layout){
+				// here is reading property give by user
 				this.layout = this.layout.replace(/^src\//, "lib/");
 				layoutSource = require(this.layout);
 			}else{

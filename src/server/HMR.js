@@ -30,14 +30,13 @@ function HMR(basePath, callback){
 			var targetFilePath = "";
 			
 			try{
-				if(path.sep === "\\"){
-					targetFilePath = filename.replace(/\\/g, "/");
-				}
+				if (path.sep === "\\") {
+            targetFilePath = filename.replace(/\\/g, "/");
+        }else{
+            targetFilePath = filename;
+        }
 				
 				targetFilePath = filename.replace(/\/src\//, "/lib/");
-				
-				//console.log(filename);
-				//console.log(targetFilePath);
 				
 				var result = FileUtil.compilerFile(filename);
 				var err = FileUtil.writeFile(targetFilePath, result);
