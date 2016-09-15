@@ -199,10 +199,30 @@ class BaseController extends BaseComponent {
 		this.state[reducerName] = state;
 	}
 	
+	connect(actionMap) {
+		const self = this;
+		const list = Object.keys(actionMap);
+		
+		if(list.length > 0){
+			list.map((action, index) => {
+				actionMap[action].load = function load() {
+					if(self.store === null){
+						self.dispatchToStore();
+					}
+					
+					const result = actionMap[action].apply(this, arguments);
+					return self.store.dispatch(result);
+				}
+			});
+		}
+	}
+	
 	dispatchToStore(sourceState) {
 		let mainReducers = require("lib/client/reducers");
 		mainReducers = mainReducers.default || mainReducers;
-
+		
+		sourceState = sourceState || {};
+		
 		this.state = Object.assign(this.state, sourceState);
 		this.state["language"] = this.language;
 		this.state["history"] = {
@@ -210,7 +230,7 @@ class BaseController extends BaseComponent {
 			currentUrl: this.request.url
 		};
 		
-		if(/layout/g.test(this.state.history.prevUrl)){
+		if(/logout/g.test(this.state.history.prevUrl)){
 			this.state.history.prevUrl = "/";
 		}
 		
@@ -251,6 +271,12 @@ class BaseController extends BaseComponent {
 			let routes = this.reactRouter(history);
 			
 			sourceState = sourceState || {};
+			
+			if(this.store){
+				const state = this.store.getState();
+				sourceState = Object.assign(state, sourceState);
+				this.store = null;
+			}
 			
 			if(this.layout){
 				// here is reading property give by user
@@ -403,9 +429,13 @@ class BaseController extends BaseComponent {
 		Lobenton.getApp().forwardBridge(path, data, this.request, this.response);*/
 	}
 	
-	beforeAction() {}
+	beforeAction() {
+		
+	}
 	
-	afterAction() {}
+	afterAction() {
+		
+	}
 	
 	beforeRender(sourceState) {
 		return sourceState;
