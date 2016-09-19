@@ -31,13 +31,14 @@ function HMR(basePath, callback){
 			
 			try{
 				if (path.sep === "\\") {
-            targetFilePath = filename.replace(/\\/g, "/");
-        }else{
-            targetFilePath = filename;
-        }
-				
-				targetFilePath = filename.replace(/\/src\//, "/lib/");
-				
+					filename += !/\.js(|x)$/gi.test(filename) ? "\\index.js" : "";
+					targetFilePath = filename.replace(/\\/g, "/");
+				} else {
+					filename += !/\.js(|x)$/gi.test(filename) ? "/index.js" : "";
+					targetFilePath = filename;
+				}
+
+				targetFilePath = targetFilePath.replace(/\/src\//, "/lib/");
 				var result = FileUtil.compilerFile(filename);
 				var err = FileUtil.writeFile(targetFilePath, result);
 								
