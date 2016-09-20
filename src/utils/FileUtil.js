@@ -65,6 +65,18 @@ class FileUtil {
 		}
 	}
 	
+	static isFile(src) {
+		return fs.lstatSync(src).isFile();
+	}
+	
+	static isJsFile(src) {
+		return /\.js(x|)$/gi.test(src);
+	}
+	
+	static isWindows(src) {
+		return path.sep === "\\";
+	}
+	
 	static getParamFromDoc(mtd, source) {
 		let target = {};
 		const docExec = new RegExp("\\/\\*\\*.+"+mtd+"\\*(.+)\\*\\/"+mtd + "(\\s+|)\\(", "gi").exec(source);
