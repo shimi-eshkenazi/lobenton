@@ -51,9 +51,13 @@ class FileUtil {
 		return fs.writeFileSync(src, result.code);
 	}
 	
-	static getFile(src) {
+	static getFile(src, replaceSpace) {
 		let buffer = fs.readFileSync(src, "utf8");
-		buffer = buffer.replace(/\s/g,"");
+		
+		if(replaceSpace !== false){	
+			buffer = buffer.replace(/\s/g,"");
+		}
+		
 		return buffer;
 	}
 	
