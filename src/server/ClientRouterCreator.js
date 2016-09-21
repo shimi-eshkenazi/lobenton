@@ -185,6 +185,8 @@ class ClientRouterCreator extends BaseComponent {
 						if(controllerAction === patternValue){
 							if(this.registedUrl.indexOf(patternValue) === -1){
 								this.registedUrl.push(patternValue);
+							}else{
+								return;
 							}
 							
 							if(pattern === '/' && hasExtend){
