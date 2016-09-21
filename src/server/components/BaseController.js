@@ -290,6 +290,7 @@ class BaseController extends BaseComponent {
 			sourceState = this.dispatchToStore(sourceState);
 			layoutSource = layoutSource.default || layoutSource;
 			passToLayoutWithoutRedux.reduxState = sourceState;
+			//passToLayoutWithoutRedux.store = this.store;
 			
 			match({ routes, location }, function matchHandle(error, redirectLocation, renderProps){
 				try{
@@ -301,11 +302,15 @@ class BaseController extends BaseComponent {
 						this.forwardUrl("error/404");
 					} else {
 						const routerContext = React.createElement(RouterContext, Object.assign({}, renderProps));
-						const layout = React.createElement(layoutSource, passToLayoutWithoutRedux, routerContext);
-						const i18nextProvider = React.createElement(I18nextProvider, { i18n : this.i18nDetectorInstance }, layout);
-						const provider = React.createElement(Provider, { store : this.store }, i18nextProvider);
+						const i18nextProvider1 = React.createElement(I18nextProvider, { i18n : this.i18nDetectorInstance }, routerContext);
+						const provider1 = React.createElement(Provider, { store : this.store }, i18nextProvider1);
+						const container = ReactDOMServer.renderToString(provider1);
 						
-						let html = ReactDOMServer.renderToString(provider);
+						const layout = React.createElement(layoutSource, passToLayoutWithoutRedux, container);
+						const i18nextProvider2 = React.createElement(I18nextProvider, { i18n : this.i18nDetectorInstance }, layout);
+						const provider2 = React.createElement(Provider, { store : this.store }, i18nextProvider2);
+						
+						let html = ReactDOMServer.renderToStaticMarkup(provider2);
 						html = '<!DOCTYPE lang="en">'+html;
 						
 						if(this.i18nDetector.getNeedSetCookie() === true){
