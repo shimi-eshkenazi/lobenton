@@ -92,7 +92,11 @@ function toRuleMap(rule, ruleValue) {
 						newMapping[param] = ruleValueMapMapping[param];
 					});
 					
-					newObj[ruleMap.regex+ruleValueMapRegex] = newMapping;
+					if(/^\\\/$/.test(ruleMap.regex)){
+						newObj[ruleValueMapRegex] = newMapping;
+					}else{
+						newObj[ruleMap.regex + ruleValueMapRegex] = newMapping;
+					}
 				}else{
 					newObj[ruleValueMapRegex] = ruleValueMapMapping;	
 				}

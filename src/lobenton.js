@@ -4,7 +4,7 @@ import path from "path";
 import HMR from "./server/HMR.js";
 import BaseController from "./server/components/BaseController.js";
 import BaseComponent from "./server/components/BaseComponent.js";
-import ExtendableError from "./server/components/ExtendableError.js";
+import ExtendableError from "./exceptions/ExtendableError.js";
 import DeviceDetector from "./utils/DeviceDetector.js";
 import I18nDetector from "./utils/I18nDetector.js";
 import Utils from "./utils/Utils.js";

@@ -1,6 +1,6 @@
 "use strict";
 
-import Utils from "../../utils/Utils.js";
+import Utils from "../utils/Utils.js";
 
 class ExtendableError extends Error {
 	constructor(message) {

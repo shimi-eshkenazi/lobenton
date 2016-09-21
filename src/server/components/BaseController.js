@@ -10,6 +10,7 @@ import {match, RouterContext, useRouterHistory} from "react-router";
 import {Provider} from "react-redux";
 import {I18nextProvider}  from "react-i18next";
 import { createMemoryHistory, useQueries } from 'history';
+import NotFoundException from "../../exceptions/NotFoundException.js";
 import asyncBeApi from "./asyncBeApi.js";
 import BaseComponent from "./BaseComponent.js";
 import FileUtil from "../../utils/FileUtil.js";
@@ -290,16 +291,15 @@ class BaseController extends BaseComponent {
 			sourceState = this.dispatchToStore(sourceState);
 			layoutSource = layoutSource.default || layoutSource;
 			passToLayoutWithoutRedux.reduxState = sourceState;
-			//passToLayoutWithoutRedux.store = this.store;
 			
 			match({ routes, location }, function matchHandle(error, redirectLocation, renderProps){
 				try{
 					if (redirectLocation) {
 						this.redirect(301, redirectLocation.pathname + redirectLocation.search);
 					} else if (error) {
-						this.forwardUrl("error/500", error);
+						throw error;
 					} else if (!renderProps) {
-						this.forwardUrl("error/404");
+						throw new NotFoundException("Route match error : Cannot find route '"+this.request.url+"'");
 					} else {
 						const routerContext = React.createElement(RouterContext, Object.assign({}, renderProps));
 						const i18nextProvider1 = React.createElement(I18nextProvider, { i18n : this.i18nDetectorInstance }, routerContext);
@@ -323,11 +323,10 @@ class BaseController extends BaseComponent {
 						this.sendBody(200, html);
 					}
 				}catch(jsxError){
-					this.forwardUrl("error/500", jsxError);
+					throw jsxError;
 				}
 			}.bind(this));
 		}catch(renderError){
-			console.log(renderError);
 			throw renderError;
 		}
 	}

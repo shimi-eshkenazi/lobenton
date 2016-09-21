@@ -1,6 +1,6 @@
 "use strict";
 
-import {ExtendableError} from "lobenton";
+import ExtendableError from "./ExtendableError.js";
 
 class NotFoundException extends ExtendableError {
 	constructor(message) {
