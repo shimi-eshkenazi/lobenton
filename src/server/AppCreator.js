@@ -25,7 +25,7 @@ class AppCreator extends BaseComponent {
 			let HMR = require("./HMR.js");
 			HMR = HMR.default || HMR;	
 			HMR.change(function change(filePath) {
-				this.components = {};
+				this.components = {"Log":this.components["Log"]};
 				this.createComponents(false);
 				this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
 				this.clientRouterCreator.setConfig(this.config);

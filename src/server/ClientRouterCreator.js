@@ -49,6 +49,10 @@ class ClientRouterCreator extends BaseComponent {
 					sourcePath = path.join(this.config.basePath, controllerPath);
 				}
 				
+				if(/node_modules/.test(sourcePath)){
+					return;
+				}
+				
 				const controllerList =  FileUtil.getFileList(sourcePath)
 				
 				controllerList.map(function loop(fileName) {
@@ -118,7 +122,7 @@ class ClientRouterCreator extends BaseComponent {
 		let router = {subRules:{}};
 		
 		this.findMatchRoute(router, this.urlManager.config.rules);
-		
+
 		const noHandleUrl = Object.keys(this.allUrl).filter(function loop(url){
 				return this.allUrl[url] !== null && this.registedUrl.indexOf(url) === -1;
 			}.bind(this)).reduce(function loopNoHandle(newObj, url, index){
@@ -144,14 +148,9 @@ class ClientRouterCreator extends BaseComponent {
 	}
 	
 	findMatchRoute(router, currentMap) {
-		let hasExtend = currentMap.hasOwnProperty("extend") ? true : false;
-		
 		Object.keys(currentMap).map(function loop(pattern){
-			if(pattern === 'extend'){
-				return;
-			}
-			
-			const patternValue = currentMap[pattern];
+			// 去除regex
+			let patternValue = currentMap[pattern];
 			pattern = /^\//.test(pattern) ? pattern : "/"+pattern;
 		
 			let result = null;
@@ -165,37 +164,56 @@ class ClientRouterCreator extends BaseComponent {
 				regexArray.push(partResult);
 			}
 			
+			// 轉成字串
 			regexStr = "/"+regexArray.join("/");
-		
+			
+			let extend = false;
+			
+			if(Array.isArray(patternValue)){
+				if(patternValue.length > 1 && patternValue[1] === true){
+					extend = true;
+				}
+				
+				patternValue = patternValue[0];
+			}
+			
+			// 如果值是字串
 			if(typeof patternValue === 'string'){
 				if(!this.allUrl.hasOwnProperty(patternValue)){
 					this.allUrl[patternValue] = null;
 				}
 				
+				// 所有 controller 檔案
 				Object.keys(this.controllerMap).map(function loopFile(filePath) {
 					const urlPattern = this.controllerMap[filePath].urlPattern;
 					
+					// controller 檔案內的組合
 					Object.keys(urlPattern).map(function loopPattern(controllerAction) {
 						let controllerActionValue = urlPattern[controllerAction];
 						
+						// 註冊在全部
 						if(this.allUrl.hasOwnProperty(controllerAction)){
 							this.allUrl[controllerAction] = controllerActionValue;
 						}
 						
+						// 命中
 						if(controllerAction === patternValue){
+							// 註冊在已匹配
 							if(this.registedUrl.indexOf(patternValue) === -1){
 								this.registedUrl.push(patternValue);
 							}else{
-								return;
+								//return;
 							}
 							
-							if(pattern === '/' && hasExtend){
+							// 如果是根目錄
+							if(extend === true){
 								router.pattern = {
 									view: controllerActionValue.view,
 									viewName: FileUtil.getViewName(controllerActionValue.view),
 									docParams: controllerActionValue.docParams
 								};
 							}else{
+								// 加入子目錄
 								router.subRules[regexStr] = {
 									pattern: {
 										view: controllerActionValue.view,
@@ -209,6 +227,7 @@ class ClientRouterCreator extends BaseComponent {
 					}.bind(this));
 				}.bind(this));
 			}else{
+				// 新開一個物件
 				router.subRules[regexStr] = {
 					pattern: "",
 					subRules: {}

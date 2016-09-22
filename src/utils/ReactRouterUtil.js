@@ -72,14 +72,14 @@ class ReactRouterUtil {
 				}else{
 					if(route === "/"){
 						this.mainRouterArray.push(tab+'<Route path="'+(prefixName)+'" component={'+routeValue.pattern.viewName+'} '+paramStr+'/>');	
-					}else if(prefixName === "/"){
-						this.mainRouterArray.push(tab+'<Route path="'+(route)+'" component={'+routeValue.pattern.viewName+'} '+paramStr+'/>');
+					//}else if(prefixName === "/"){
+						//this.mainRouterArray.push(tab+'<Route path="'+(route)+'" component={'+routeValue.pattern.viewName+'} '+paramStr+'/>');
 					}else{
 						this.mainRouterArray.push(tab+'<Route path="'+(prefixName+route)+'" component={'+routeValue.pattern.viewName+'} '+paramStr+'/>');
 					}
 				}
 			}else if(routeValue.pattern === '' && routeValue.subRules !== null){
-				this.toJsxRoute(routeValue.subRules, route, tab);
+				this.toJsxRoute(routeValue.subRules, prefixName+route, tab);
 			}
 		}.bind(this));
 	}

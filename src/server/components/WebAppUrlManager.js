@@ -77,6 +77,10 @@ function patternToMap(pattern) {
 }
 
 function toRuleMap(rule, ruleValue) {
+	if(Array.isArray(ruleValue)){
+		ruleValue = ruleValue[0];
+	}
+	
 	if(typeof ruleValue === "object"){
 		return Object.keys(ruleValue).reduce(function loopRule(newObj, subRuleHasRegex, subRuleHasRegexIndex) {
 			const ruleValueMap = toRuleMap(subRuleHasRegex, ruleValue[subRuleHasRegex]);

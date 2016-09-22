@@ -339,7 +339,7 @@ class RequestHandler {
 				}
 				this.request.method = "GET";
 				let targetError = error.code ? error : new ErrorException(error);
-				let defaultErrorController = "/"+this.config.defaultErrorController || "";
+				let defaultErrorController = (((/^\/.+/.test(this.config.defaultErrorController))?"":"/")+this.config.defaultErrorController) || "";
 				Lobenton.getApp().forwardBridge(defaultErrorController, {}, this.request, this.response, targetError);
 			}
 		}.bind(this));
