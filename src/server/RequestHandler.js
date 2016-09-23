@@ -308,12 +308,19 @@ class RequestHandler {
 					throw new ErrorException(errorMag);
 				}
 
-				const pathname = Utils.fixUrl(this.request).pathname;
-				const UrlManager = Lobenton.getComponent("urlManager");
-				const matchResult = UrlManager.do(pathname);
+				let matchResult = null;
 				
-				if(matchResult === "no impl!"){
-					throw new Error("No impl 'do' for system call in UrlManager");
+				if(this.request.hasOwnProperty("alreadyMatch")){
+					matchResult = this.request.alreadyMatch;
+					matchResult.paramMap = {};
+				}else{
+					const pathname = Utils.fixUrl(this.request).pathname;
+					const UrlManager = Lobenton.getComponent("urlManager");
+					matchResult = UrlManager.do(pathname);
+					
+					if(matchResult === "no impl!"){
+						throw new Error("No impl 'do' for system call in UrlManager");
+					}
 				}
 
 				delete matchResult.paramMap.controller;

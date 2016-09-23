@@ -371,31 +371,31 @@ class BaseController extends BaseComponent {
 		this.cookie(name, "", {maxAge: -900000, httpOnly: false });
 	}
 	
-	createUrl(path) {
-		if(/^\//.test(path)){
-			return this.getProtocol()+"://"+this.getHost()+path;
+	createUrl(urlPath) {
+		if(/^\//.test(urlPath)){
+			return this.getProtocol()+"://"+this.getHost()+urlPath;
 		}else{
-			return this.getProtocol()+"://"+this.getHost()+"/"+path;
+			return this.getProtocol()+"://"+this.getHost()+"/"+urlPath;
 		}
 	}
 	
-	location(path) {
+	location(urlPath) {
 		let targetUrl = "";
 		
-		if(/^http.+/.test(path)){
-			targetUrl = path;
-		}else if(/^\/\/.+/.test(path)){
-			targetUrl = this.getProtocol() + path;
+		if(/^http.+/.test(urlPath)){
+			targetUrl = urlPath;
+		}else if(/^\/\/.+/.test(urlPath)){
+			targetUrl = this.getProtocol() + urlPath;
 		}else {
-			targetUrl = this.createUrl(path);
+			targetUrl = this.createUrl(urlPath);
 		}
 		
 		this.response.setHeader('Location', targetUrl);
 		this.sendBody(200, "");
 	}
 	
-	redirect(path) {
-		let address = path;
+	redirect(urlPath) {
+		let address = urlPath;
 		let status = 302;
 
 		if (arguments.length === 2) {
@@ -411,26 +411,38 @@ class BaseController extends BaseComponent {
 		this.sendBody(status, "");
 	}
 	
-	forwardUrl(path, data) {
+	forwardUrl(urlPath, data) {
 		if(!Lobenton){
 			Lobenton = require("lobenton");
 			Lobenton = Lobenton.default || Lobenton;
 		}
 
-		path = "/"+path || "";
+		urlPath = (((/^\/.+/.test(urlPath))?"":"/")+urlPath) || "";
 		data = data || {};
-		Lobenton.getApp().forwardBridge(path, data, this.request, this.response);
+		Lobenton.getApp().forwardBridge(urlPath, data, this.request, this.response);
 	}
 	
-	forward(path, data) {
-		/*if(!Lobenton){
+	forward(controllerAction, data) {
+		if(!Lobenton){
 			Lobenton = require("lobenton");
 			Lobenton = Lobenton.default || Lobenton;
 		}
 
-		path = "/"+path || "";
-		data = data || {};
-		Lobenton.getApp().forwardBridge(path, data, this.request, this.response);*/
+		const controllerActionArray = controllerAction.split("/");
+		
+		if(controllerActionArray.length === 2){
+			this.request.alreadyMatch = {
+				controller: controllerActionArray[0],
+				action: controllerActionArray[1]
+			};
+			data = data || {};
+			Lobenton.getApp().forwardBridge(path, data, this.request, this.response);
+		}else{
+			this.request.method = "GET";
+			const targetError = new ErrorException("Forward error : Cannot find pattern '"+controllerAction+"'");
+			const defaultErrorController = (((/^\/.+/.test(this.config.defaultErrorController))?"":"/")+this.config.defaultErrorController) || "";
+			Lobenton.getApp().forwardBridge(defaultErrorController, {}, this.request, this.response, targetError);
+		}
 	}
 	
 	beforeAction() {
