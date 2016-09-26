@@ -6,29 +6,34 @@ import path from "path";
 import {transform, transformFileSync} from "babel-core";
 
 function getControllerName(source) {
-	const docExec = new RegExp("class(\\w+)Controllerextends", "gi").exec(source);
+	let docExec = new RegExp("class(\\w+)Controllerextends", "gi").exec(source);
+	docExec = docExec || [];
 	return Utils.lowerFirstLetter(docExec[1]) || null;
 }
 
 function getActionName(source) {
-	const docExec = new RegExp("\\*action(\\w+)\\*", "gi").exec(source);
+	let docExec = new RegExp("\\*action(\\w+)\\*", "gi").exec(source);
+	docExec = docExec || [];
 	return Utils.lowerFirstLetter(docExec[1]) || null;
 }
 
 function getActionFuctionName(source) {
-	const docExec = new RegExp("\\*action(\\w+)\\*", "gi").exec(source);
+	let docExec = new RegExp("\\*action(\\w+)\\*", "gi").exec(source);
+	docExec = docExec || [];
 	return docExec[1] ? "action"+docExec[1] : null;
 }
 
 function getControllerLayout(source) {
-	const docExec = new RegExp("\\@layout\\:(((?!\\*).)*)\\*", "gi").exec(source);
+	let docExec = new RegExp("\\@layout\\:(((?!\\*).)*)\\*", "gi").exec(source);
+	docExec = docExec || [];
 	return docExec[1] || null;
 	//const docExec = new RegExp("this\.layout\=(\"|\')(((?!\\*).)*)(\"|\')", "gi").exec(source);
 	//return docExec[2] || null;
 }
 
 function getActionView(source) {
-	const docExec = new RegExp("\\@view\\:(((?!\\*).)*)\\*", "gi").exec(source);
+	let docExec = new RegExp("\\@view\\:(((?!\\*).)*)\\*", "gi").exec(source);
+	docExec = docExec || [];
 	return docExec[1] || null;
 }
 
