@@ -25,7 +25,7 @@ class BaseController extends BaseComponent {
 	constructor() {
 		super();
 		this.layout = null;
-		this.view = null;
+		//this.view = null;
 		this.controller = null;
 		this.action = null;
 		this.controllerPath = null;
@@ -57,6 +57,10 @@ class BaseController extends BaseComponent {
     }else{
         this.controllerPath = this.controllerPath.replace(/\/lib\//g,"/src/");
     }
+		
+		if(!this.layout){
+			FileUtil.fixControllerLayout(this);
+		}
 		
 		FileUtil.fixControllerMethod(this);
 		
@@ -100,9 +104,9 @@ class BaseController extends BaseComponent {
 		this.reactRouter = reactRouter;
 	}
 	
-	setView (view) {
-		this.view = view;
-	}
+	//setView (view) {
+	//	this.view = view;
+	//}
 	
 	setFilterResult (filterResult) {
 		this.filterResult = filterResult;

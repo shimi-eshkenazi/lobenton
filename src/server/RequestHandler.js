@@ -233,7 +233,7 @@ class RequestHandler {
 			
 			controllerInstance.afterContinue(function checkLogin(result){
 				controllerInstance.setAction(matchResult.action);
-				controllerInstance.setView(view);
+				//controllerInstance.setView(view);
 				controllerInstance.setFilterResult(result);
 				this.doAction(controllerInstance, action);
 			}.bind(this));
@@ -242,7 +242,7 @@ class RequestHandler {
 			LoginFilter.do(controllerInstance);
 		}else {
 			controllerInstance.setAction(matchResult.action);
-			controllerInstance.setView(view);
+			//controllerInstance.setView(view);
 			this.doAction(controllerInstance, action);
 		}
 	}

@@ -21,8 +21,10 @@ function getActionFuctionName(source) {
 }
 
 function getControllerLayout(source) {
-	const docExec = new RegExp("this\.layout\=(\"|\')(((?!\\*).)*)(\"|\')", "gi").exec(source);
-	return docExec[2] || null;
+	const docExec = new RegExp("\\@layout\\:(((?!\\*).)*)\\*", "gi").exec(source);
+	return docExec[1] || null;
+	//const docExec = new RegExp("this\.layout\=(\"|\')(((?!\\*).)*)(\"|\')", "gi").exec(source);
+	//return docExec[2] || null;
 }
 
 function getActionView(source) {
@@ -31,7 +33,8 @@ function getActionView(source) {
 }
 
 function isSourceHasLayout(source) {
-	return /this\.layout/g.test(source);
+	return /\@layout/g.test(source);
+	//return /this\.layout/g.test(source);
 }
 
 function isSourceHasView(source) {
@@ -131,6 +134,16 @@ class FileUtil {
 		target["method"] = target["method"] || "GET";
 				
 		return target;
+	}
+	
+	static fixControllerLayout(target, source) {
+		if(!source){
+			source = FileUtil.getFile(target.controllerPath+".js");
+		}
+		
+		const controllerLayout = getControllerLayout(source);
+		
+		target.layout = controllerLayout;
 	}
 	
 	static fixControllerMethod(target, source) {
