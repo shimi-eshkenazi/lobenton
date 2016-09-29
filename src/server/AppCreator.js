@@ -57,6 +57,7 @@ class AppCreator extends BaseComponent {
 				if(componentName !== 'log' || (componentName === 'log' && noLog === true)){
 					const componentSetting = this.config.components[componentName];
 					componentSetting.basePath = this.config.basePath;
+					componentSetting.urlPrefixPath = this.config.urlPrefixPath;
 					this.components[Utils.capitalizeFirstLetter(componentName)] = this.createComponent(componentName, componentSetting);
 				}
 			}
