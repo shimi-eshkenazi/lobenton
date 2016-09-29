@@ -57,13 +57,14 @@ function createHotMiddleware(webpackDevConfig){
 
 class RequestHandler {
 	constructor(config, reactRouter) {
+		this.staticFolder = this.config.staticFolder ? path.join(this.config.basePath, this.config.staticFolder) : path.join(this.config.basePath, "public");
 		this.reactRouter = reactRouter;
 		this.config = config;
 		this.request = null;
 		this.response = null;
 		this.processChain = [
 			compression(),
-			serverStatic(path.join(this.config.basePath, "public")),
+			serverStatic(staticFolder),
 			Utils.fixQuery(),
 			cookieParser(),
 			bodyParser.json(),
@@ -105,7 +106,7 @@ class RequestHandler {
 				mdInstance = mdInstance.default || mdInstance;
 				
 				if(mdSetting.exec === true){
-					mdInstance = mdInstance(this.config);	
+					mdInstance = mdInstance(this.config, mdSetting);	
 				}
 				
 				let func = function (req, res, next){
