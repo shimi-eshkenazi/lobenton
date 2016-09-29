@@ -346,8 +346,11 @@ class RequestHandler {
 					console.log(error);
 				}
 				this.request.method = "GET";
+				this.config.urlPrefixPath = this.config.urlPrefixPath || "";
 				let targetError = error.code ? error : new ErrorException(error);
-				let defaultErrorController = (((/^\/.+/.test(this.config.defaultErrorController))?"":"/")+this.config.defaultErrorController) || "";
+				let defaultErrorController = path.join(this.config.urlPrefixPath, this.config.defaultErrorController);
+				
+				defaultErrorController = (((/^\/.+/.test(defaultErrorController))?"":"/")+defaultErrorController) || "";
 				Lobenton.getApp().forwardBridge(defaultErrorController, {}, this.request, this.response, targetError);
 			}
 		}.bind(this));
