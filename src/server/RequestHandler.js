@@ -57,11 +57,11 @@ function createHotMiddleware(webpackDevConfig){
 
 class RequestHandler {
 	constructor(config, reactRouter) {
-		this.staticFolder = this.config.staticFolder ? path.join(this.config.basePath, this.config.staticFolder) : path.join(this.config.basePath, "public");
 		this.reactRouter = reactRouter;
 		this.config = config;
 		this.request = null;
 		this.response = null;
+		this.staticFolder = this.config.staticFolder ? path.join(this.config.basePath, this.config.staticFolder) : path.join(this.config.basePath, "public");
 		this.processChain = [
 			compression(),
 			serverStatic(staticFolder),
