@@ -64,7 +64,7 @@ class RequestHandler {
 		this.staticFolder = this.config.staticFolder ? path.join(this.config.basePath, this.config.staticFolder) : path.join(this.config.basePath, "public");
 		this.processChain = [
 			compression(),
-			serverStatic(staticFolder),
+			serverStatic(this.staticFolder),
 			Utils.fixQuery(),
 			cookieParser(),
 			bodyParser.json(),
