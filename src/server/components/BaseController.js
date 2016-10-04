@@ -435,7 +435,7 @@ class BaseController extends BaseComponent {
 				action: controllerActionArray[1]
 			};
 			data = data || {};
-			Lobenton.getApp().forwardBridge(path, data, this.request, this.response);
+			Lobenton.getApp().forwardBridge(this.request.url, data, this.request, this.response);
 		}else{
 			this.request.method = "GET";
 			const targetError = new ErrorException("Forward error : Cannot find pattern '"+controllerAction+"'");

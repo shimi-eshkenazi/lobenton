@@ -112,6 +112,8 @@ class AppCreator extends BaseComponent {
 				request._parsedUrl.href = path;
 				request._parsedUrl._raw = path;
 				return this.handleRequest(request, response, data, errorObject);
+			}else if(request.url  === path) {
+				return this.handleRequest(request, response, data, errorObject);
 			}else{
 				if(!errorObject){
 					errorObject = new Error("Server Error");

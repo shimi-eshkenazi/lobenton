@@ -309,13 +309,14 @@ class RequestHandler {
 				}
 
 				let matchResult = null;
+				const UrlManager = Lobenton.getComponent("urlManager");
 				
 				if(this.request.hasOwnProperty("alreadyMatch")){
 					matchResult = this.request.alreadyMatch;
 					matchResult.paramMap = {};
+					matchResult.controllerPath = UrlManager.getConfig().controllerPath;
 				}else{
 					const pathname = Utils.fixUrl(this.request).pathname;
-					const UrlManager = Lobenton.getComponent("urlManager");
 					matchResult = UrlManager.do(pathname);
 					
 					if(matchResult === "no impl!"){
