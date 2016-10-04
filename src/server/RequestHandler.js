@@ -187,25 +187,29 @@ class RequestHandler {
 					throw new ErrorException(error);
 				}
 			}
-
-			controller = controller.default || controller;	
-			controllerInstance = new controller();
-			controllerInstance.setController(matchResult.controller);
-			controllerInstance.setConfig(this.config);
-			controllerInstance.setReactRouter(this.reactRouter);
-			controllerInstance.setRequest(this.request);
-			controllerInstance.setResponse(this.response);
-			controllerInstance.setNowHttpMethod(this.request.method.toUpperCase());
-			controllerInstance.setControllerPath(controllerPath);
-			controllerInstance.setHeaderMap(reqHeaders);
-			controllerInstance.setCookieMap(reqCookies);
-			controllerInstance.initial(true);
+			
+			try {
+				controller = controller.default || controller;	
+				controllerInstance = new controller();
+				controllerInstance.setController(matchResult.controller);
+				controllerInstance.setConfig(this.config);
+				controllerInstance.setReactRouter(this.reactRouter);
+				controllerInstance.setRequest(this.request);
+				controllerInstance.setResponse(this.response);
+				controllerInstance.setNowHttpMethod(this.request.method.toUpperCase());
+				controllerInstance.setControllerPath(controllerPath);
+				controllerInstance.setHeaderMap(reqHeaders);
+				controllerInstance.setCookieMap(reqCookies);
+				controllerInstance.initial(true);
+			}catch(error){
+				throw new ErrorException(error);
+			}
 
 			try{
 				this.loadAction(matchResult, controllerInstance);		
 			}catch(actionError) {
 				if(/Cannot/.test(actionError.message) && !actionError.hasOwnProperty("code")){
-					throw new NotFoundException("Load action Error : Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'");
+					throw new NotFoundException("Load action Error : Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'; Url : "+this.request.url);
 				}else{
 					throw new ErrorException(actionError);
 				}
@@ -220,10 +224,10 @@ class RequestHandler {
 		const view = action.view || null;
 		
 		if(typeof action.method === 'string' && action.method.toUpperCase() !== this.request.method.toUpperCase()){
-			throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'");
+			throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'; Url : "+this.request.url);
 		}else if(typeof action.method === 'object'){
 			if(action.method.indexOf(this.request.method.toUpperCase()) === -1){
-				throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'");
+				throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'; Url : "+this.request.url);
 			}
 		}
 		
