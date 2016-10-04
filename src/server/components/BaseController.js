@@ -25,7 +25,6 @@ class BaseController extends BaseComponent {
 	constructor() {
 		super();
 		this.layout = null;
-		//this.view = null;
 		this.controller = null;
 		this.action = null;
 		this.controllerPath = null;
@@ -64,7 +63,7 @@ class BaseController extends BaseComponent {
 		
 		FileUtil.fixControllerMethod(this);
 		
-		if(fromRequest === true){
+		if(this.config.webpackDevConfig && fromRequest === true){
 			this.deviceDetector  = new DeviceDetector();
 			this.deviceDetector.setDefaultDevice(DeviceDetector.DESKTOP);
 			this.deviceDetector.detect(this.request);
@@ -103,10 +102,6 @@ class BaseController extends BaseComponent {
 	setReactRouter(reactRouter) {
 		this.reactRouter = reactRouter;
 	}
-	
-	//setView (view) {
-	//	this.view = view;
-	//}
 	
 	setFilterResult (filterResult) {
 		this.filterResult = filterResult;

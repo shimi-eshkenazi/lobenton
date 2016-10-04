@@ -18,25 +18,35 @@ class AppCreator extends BaseComponent {
 		this.createComponents(true);
 		
 		if(process.env.NODE_ENV === "dev" && !this.config.isStart){
-			this.clientRouterCreator = new ClientRouterCreator();
-			this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
-			this.clientRouterCreator.setConfig(this.config);
+			// 有 webpack config 才做事 
+			if(this.config.webpackDevConfig){
+				this.clientRouterCreator = new ClientRouterCreator();
+				this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
+				this.clientRouterCreator.setConfig(this.config);
+			}
 			
 			let HMR = require("./HMR.js");
 			HMR = HMR.default || HMR;	
 			HMR.change(function change(filePath) {
 				this.components = {"Log":this.components["Log"]};
 				this.createComponents(false);
-				this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
-				this.clientRouterCreator.setConfig(this.config);
-				this.clientRouterCreator.renew(filePath);
+				
+				if(this.config.webpackDevConfig){
+					this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
+					this.clientRouterCreator.setConfig(this.config);
+					this.clientRouterCreator.renew(filePath);
+				}
 			}.bind(this));
 
-			this.clientRouterCreator.after(function after() {
-				this.reactRouter = require("lobenton/createRouter.js").default;
-				new RequestHandler(this.config, this.reactRouter);
-			}.bind(this));
-			this.clientRouterCreator.initial();
+			if(this.config.webpackDevConfig){
+				this.clientRouterCreator.after(function after() {
+					this.reactRouter = require("lobenton/createRouter.js").default;
+					new RequestHandler(this.config, this.reactRouter);
+				}.bind(this));
+				this.clientRouterCreator.initial();
+			}else{
+				new RequestHandler(this.config);
+			}
 		}else{
 			this.reactRouter = require("lobenton/createRouter.js").default;
 			new RequestHandler(this.config, this.reactRouter);

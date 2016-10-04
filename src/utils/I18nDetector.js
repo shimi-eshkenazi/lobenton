@@ -29,7 +29,6 @@ class I18nDetector {
 		};
 		
 		if (cookie === undefined || !I18nDetector.hasOwnProperty(cookie.toUpperCase())){
-			console.log("now is : " + cookie);
 			this.needSetCookie = true;
 			cookie = this.defaultLanguage;
 			settings.lng = this.defaultLanguage;

@@ -57,7 +57,7 @@ function createHotMiddleware(webpackDevConfig){
 
 class RequestHandler {
 	constructor(config, reactRouter) {
-		this.reactRouter = reactRouter;
+		this.reactRouter = reactRouter || null;
 		this.config = config;
 		this.request = null;
 		this.response = null;
@@ -71,7 +71,7 @@ class RequestHandler {
 			bodyParser.urlencoded({extended: true})
 		];
 		
-		if(process.env.NODE_ENV === "dev" && !this.config.isStart){
+		if(process.env.NODE_ENV === "dev" && !this.config.isStart && this.config.webpackDevConfig){
 			let webpackDevConfigMain = require(this.config.webpackDevConfig);
 			webpackDevConfigMain = webpackDevConfigMain.default || webpackDevConfigMain;
 			
@@ -243,7 +243,6 @@ class RequestHandler {
 			LoginFilter.do(controllerInstance);
 		}else {
 			controllerInstance.setAction(matchResult.action);
-			//controllerInstance.setView(view);
 			this.doAction(controllerInstance, action);
 		}
 	}
