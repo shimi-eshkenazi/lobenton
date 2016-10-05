@@ -111,19 +111,14 @@ class AppCreator extends BaseComponent {
 				request._parsedUrl.path = path;
 				request._parsedUrl.href = path;
 				request._parsedUrl._raw = path;
-				return this.handleRequest(request, response, data, errorObject);
-			}else if(request.url  === path) {
-				return this.handleRequest(request, response, data, errorObject);
-			}else{
-				if(!errorObject){
-					errorObject = new Error("Server Error");
-				}
 			}
+			
+			return this.handleRequest(request, response, data, errorObject);
+		}else{
+			response.statusCode = 500;
+			response.setHeader('Content-Type', 'text/html');
+			response.end("Forward error : forwardBridge");
 		}
-		
-		response.statusCode = errorObject.code;
-		response.setHeader('Content-Type', 'text/html');
-		response.end("<pre>"+errorObject.stack+"</pre>");
 	}
 	
 	handleRequest(request, response, data, errorObject) {

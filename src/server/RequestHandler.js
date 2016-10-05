@@ -57,6 +57,7 @@ function createHotMiddleware(webpackDevConfig){
 
 class RequestHandler {
 	constructor(config, reactRouter) {
+		this.controllerPath = null;
 		this.reactRouter = reactRouter || null;
 		this.config = config;
 		this.request = null;
@@ -134,165 +135,170 @@ class RequestHandler {
 	}
 	
 	loadController(matchResult) {
-		if(matchResult.controller !== null){
-			let controllerPath = null;
+		try {
 			let controller = null;
-			let controllerInstance = null;
 			let srcIndex = 0;
 			let hasResult = false;
 			let loop = true;
 			let middleSrc = "";
-			const reqHeaders = this.request.headers || {};
-			const reqCookies = this.request.cookies || {};
 			
 			matchResult.controller = Utils.capitalizeFirstLetter(matchResult.controller)+"Controller";
 			matchResult.action = "action"+Utils.capitalizeFirstLetter(matchResult.action);
 			
-			try {
-				while(loop){
-					try{
-						middleSrc = matchResult.controllerPath[srcIndex];
-						
-						if(/\./.test(middleSrc)){
-							controller = RequireByFormat(middleSrc);
-							controller = controller[matchResult.controller];
-							controllerPath = FileUtil.findControllerPath(this.config.basePath, middleSrc);
-							controllerPath = path.join(controllerPath, matchResult.controller);
-						}else{
-							middleSrc = "/"+middleSrc+"/";
-							controllerPath = path.join(this.config.basePath, middleSrc + matchResult.controller);	
-							controller = require(controllerPath);
-						}
-						
-						if(controller){
-							hasResult = true;
-							loop = false;
-						}
-					}catch(e){
-						srcIndex++;	
-						
-						if(srcIndex === matchResult.controllerPath.length){
-							loop = false;
-						}
+			while(loop){
+				try{
+					middleSrc = matchResult.controllerPath[srcIndex];
+					
+					if(/\./.test(middleSrc)){
+						this.controllerPath = FileUtil.findControllerPath(this.config.basePath, middleSrc);
+						this.controllerPath = path.join(this.controllerPath, matchResult.controller);
+						controller = RequireByFormat(middleSrc);
+						controller = controller[matchResult.controller];
+					}else{
+						middleSrc = "/"+middleSrc+"/";
+						this.controllerPath = path.join(this.config.basePath, middleSrc + matchResult.controller);	
+						controller = require(this.controllerPath);
 					}
-				}
-				
-				if(hasResult === false){
-					throw new Error("Cannot find controller");
-				}
-			}catch(error){
-				if(/Cannot find/.test(error.message)) {
-					throw new NotFoundException("Cannot find controller '"+matchResult.controller+"'");
-				} else {
-					throw new ErrorException(error);
+					
+					if(controller){
+						hasResult = true;
+						loop = false;
+					}
+				}catch(e){
+					srcIndex++;	
+					
+					if(srcIndex === matchResult.controllerPath.length){
+						loop = false;
+					}
 				}
 			}
 			
-			try {
-				controller = controller.default || controller;	
-				controllerInstance = new controller();
-				controllerInstance.setController(matchResult.controller);
-				controllerInstance.setConfig(this.config);
-				controllerInstance.setReactRouter(this.reactRouter);
-				controllerInstance.setRequest(this.request);
-				controllerInstance.setResponse(this.response);
-				controllerInstance.setNowHttpMethod(this.request.method.toUpperCase());
-				controllerInstance.setControllerPath(controllerPath);
-				controllerInstance.setHeaderMap(reqHeaders);
-				controllerInstance.setCookieMap(reqCookies);
-				controllerInstance.initial(true);
-			}catch(error){
-				throw new ErrorException(error);
+			if(hasResult === false){
+				throw new NotFoundException("Cannot find controller '"+matchResult.controller+"'");
 			}
-
-			try{
-				this.loadAction(matchResult, controllerInstance);		
-			}catch(actionError) {
-				if(/Cannot/.test(actionError.message) && !actionError.hasOwnProperty("code")){
-					throw new NotFoundException("Load action Error : Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'; Url : "+this.request.url);
-				}else{
-					throw new ErrorException(actionError);
-				}
-			}
-		}else{
-			this.noSomethingMatch();
+			
+			controller = controller.default || controller;	
+			
+			
+			return controller;
+		}catch(e){
+			throw e;
+		}
+	}
+	
+	doController(matchResult, controller) {
+		try {
+			let controllerInstance = null;
+			const reqHeaders = this.request.headers || {};
+			const reqCookies = this.request.cookies || {};
+			
+			controllerInstance = new controller();
+			controllerInstance.setController(matchResult.controller);
+			controllerInstance.setConfig(this.config);
+			controllerInstance.setReactRouter(this.reactRouter);
+			controllerInstance.setRequest(this.request);
+			controllerInstance.setResponse(this.response);
+			controllerInstance.setNowHttpMethod(this.request.method.toUpperCase());
+			controllerInstance.setControllerPath(this.controllerPath);
+			controllerInstance.setHeaderMap(reqHeaders);
+			controllerInstance.setCookieMap(reqCookies);
+			controllerInstance.initial(true);
+			
+			return controllerInstance;
+		}catch(e){
+			throw e;
 		}
 	}
 	
 	loadAction(matchResult, controllerInstance) {
-		const action = controllerInstance[matchResult.action];
-		const view = action.view || null;
-		
-		if(typeof action.method === 'string' && action.method.toUpperCase() !== this.request.method.toUpperCase()){
-			throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'; Url : "+this.request.url);
-		}else if(typeof action.method === 'object'){
-			if(action.method.indexOf(this.request.method.toUpperCase()) === -1){
+		try {
+			const action = controllerInstance[matchResult.action];
+			
+			if(typeof action.method === 'string' && action.method.toUpperCase() !== this.request.method.toUpperCase()){
 				throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'; Url : "+this.request.url);
+			}else if(typeof action.method === 'object'){
+				if(action.method.indexOf(this.request.method.toUpperCase()) === -1){
+					throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'; Url : "+this.request.url);
+				}
 			}
-		}
-		
-		if(action.hasOwnProperty("login")) {
-			Object.keys(action).map(function loopDocProp(prop) {
-				controllerInstance.set(prop, action[prop]);
-			});
 			
-			controllerInstance.afterContinue(function checkLogin(result){
-				controllerInstance.setAction(matchResult.action);
-				//controllerInstance.setView(view);
-				controllerInstance.setFilterResult(result);
-				this.doAction(controllerInstance, action);
-			}.bind(this));
-			
-			const LoginFilter = Lobenton.getComponent("loginFilter");
-			LoginFilter.do(controllerInstance);
-		}else {
-			controllerInstance.setAction(matchResult.action);
-			this.doAction(controllerInstance, action);
+			return action;
+		}catch(e){
+			throw e;
 		}
 	}
 	
-	doAction(controllerInstance, action) {
-		const reqParams = this.request.params || {};
-		const reqBody = this.request.body || {};
-		const reqQuery = this.request.query || {};
-		const reqErrorObject = this.request.errorObject || null;
-		
-		let actionArgs = [];
-		const args = getParameterNames(action);
-		let argsMerge = deepAssign(reqParams, reqQuery, reqBody);
-
-		if(reqErrorObject !== null) {
-			argsMerge["errorObject"] = reqErrorObject;
-		}
-			
-		let paramMap = args.reduce(function(newObj, value, index){
-			var paramName = value;
-			
-			if(argsMerge.hasOwnProperty(paramName)){
-				actionArgs.push(argsMerge[paramName]);
-				newObj[paramName] = argsMerge[paramName];
-			}else{
-				actionArgs.push(null);
-				newObj[paramName] = null;
-			}
-			
-			delete argsMerge[paramName];
-			
-			return newObj;
-		}, {});
-		
-		paramMap = deepAssign(paramMap, argsMerge);
-		
-		controllerInstance.setParamMap(paramMap);
-		controllerInstance.beforeAction.apply(controllerInstance, actionArgs);
-		
+	doAction(matchResult, controllerInstance, action, paramObj) {
 		try {
-			action.apply(controllerInstance, actionArgs);
-		}catch(error){
-			throw new ErrorException(error);
+			if(action.hasOwnProperty("login")) {
+				Object.keys(action).map(function loopDocProp(prop) {
+					controllerInstance.set(prop, action[prop]);
+				});
+				
+				controllerInstance.afterContinue(function checkLogin(result){
+					try {
+						controllerInstance.setAction(matchResult.action);
+						controllerInstance.setFilterResult(result);
+						controllerInstance.setParamMap(paramObj.paramMap);
+						controllerInstance.beforeAction.apply(controllerInstance, paramObj.actionArgs);
+						action.apply(controllerInstance, paramObj.actionArgs);
+						controllerInstance.afterAction.apply(controllerInstance, paramObj.actionArgs);
+					} catch (e1) {
+						return this.execError({}, e1);
+					}
+				}.bind(this));
+				
+				const LoginFilter = Lobenton.getComponent("loginFilter");
+				LoginFilter.do(controllerInstance);
+			}else {
+				controllerInstance.setAction(matchResult.action);
+				controllerInstance.setParamMap(paramObj.paramMap);
+				controllerInstance.beforeAction.apply(controllerInstance, paramObj.actionArgs);
+				action.apply(controllerInstance, paramObj.actionArgs);
+				controllerInstance.afterAction.apply(controllerInstance, paramObj.actionArgs);
+			}
+		}catch(e){
+			throw e;
 		}
-		
-		controllerInstance.afterAction.apply(controllerInstance, actionArgs);
+	}
+	
+	fixArgs(action) {
+		try {
+			const reqParams = this.request.params || {};
+			const reqBody = this.request.body || {};
+			const reqQuery = this.request.query || {};
+			const reqErrorObject = this.request.errorObject || null;
+			
+			let actionArgs = [];
+			const args = getParameterNames(action);
+			let argsMerge = deepAssign(reqParams, reqQuery, reqBody);
+
+			if(reqErrorObject !== null) {
+				argsMerge["errorObject"] = reqErrorObject;
+			}
+				
+			let paramMap = args.reduce(function(newObj, value, index){
+				var paramName = value;
+				
+				if(argsMerge.hasOwnProperty(paramName)){
+					actionArgs.push(argsMerge[paramName]);
+					newObj[paramName] = argsMerge[paramName];
+				}else{
+					actionArgs.push(null);
+					newObj[paramName] = null;
+				}
+				
+				delete argsMerge[paramName];
+				
+				return newObj;
+			}, {});
+			
+			paramMap = deepAssign(paramMap, argsMerge);
+			
+			return {paramMap: paramMap, actionArgs: actionArgs};
+		}catch(e){
+			throw e;
+		}
 	}
 	
 	noSomethingMatch() {
@@ -305,59 +311,93 @@ class RequestHandler {
 		}
 	}
 	
+	testMatch() {
+		let matchResult = null;
+		let pathname = null;
+		const UrlManager = Lobenton.getComponent("urlManager");
+		
+		if(this.request.hasOwnProperty("alreadyMatch")){
+			matchResult = this.request.alreadyMatch;
+			matchResult.paramMap = {};
+			matchResult.controllerPath = UrlManager.getConfig().controllerPath;
+		}else{
+			pathname = Utils.fixUrl(this.request).pathname;
+			matchResult = UrlManager.do(pathname);
+			
+			if(matchResult === "no impl!"){
+				throw new Error("No impl 'do' for system call in UrlManager");
+			}
+		}
+
+		delete matchResult.paramMap.controller;
+		delete matchResult.paramMap.action;
+		
+		return matchResult;
+	}
+	
+	finalError(error) {
+		this.response.statusCode = error.code;
+		this.response.setHeader('Content-Type', 'text/html');
+		this.response.end("<pre>"+error.stack+"</pre>");
+	}
+	
+	execError(data, error) {
+		const re = new RegExp(this.config.defaultErrorController, "gi");
+		
+		if(re.test(this.request.url)){
+			this.finalError(error);
+		}else{
+			this.request.method = "GET";
+			const controllerAction = this.config.defaultErrorController;
+			const controllerActionArray = controllerAction.split("/");
+			
+			if(controllerActionArray.length === 2){
+				this.request.alreadyMatch = {
+					controller: controllerActionArray[0],
+					action: controllerActionArray[1]
+				};
+				data = data || {};
+				data.code = error.code || 500;
+				data.error_code = error.code || 500;
+				data.message = error.message || "Server Error";
+				data.error_message = error.message || "Server Error";
+				Lobenton.getApp().forwardBridge(this.request.url, data, this.request, this.response, error);
+			}else{
+				this.finalError(new ErrorException("Forward error : Cannot find pattern '"+controllerAction+"'"));
+			}
+		}
+	}
+	
 	exec(data, errorObject) {
-		this.runPrecessChain(function processChainResult(errorMag){
-			try {
+		try {
+			this.runPrecessChain(function processChainResult(errorMag){
 				if(errorMag){
 					throw new ErrorException(errorMag);
 				}
 
-				let matchResult = null;
-				const UrlManager = Lobenton.getComponent("urlManager");
-				
-				if(this.request.hasOwnProperty("alreadyMatch")){
-					matchResult = this.request.alreadyMatch;
-					matchResult.paramMap = {};
-					matchResult.controllerPath = UrlManager.getConfig().controllerPath;
-				}else{
-					const pathname = Utils.fixUrl(this.request).pathname;
-					matchResult = UrlManager.do(pathname);
-					
-					if(matchResult === "no impl!"){
-						throw new Error("No impl 'do' for system call in UrlManager");
-					}
-				}
-
-				delete matchResult.paramMap.controller;
-				delete matchResult.paramMap.action;
+				let matchResult = this.testMatch();
 				
 				this.request.params = matchResult.paramMap;
+				this.request.errorObject = errorObject ? errorObject : null;
 				
 				if(typeof data === "object" && Object.keys(data).length > 0){
 					this.request.query = data;
 					this.request.body = {};
 				}
 				
-				if(errorObject){
-					this.request.errorObject = errorObject;
+				if(matchResult.controller !== null){
+					let controller = this.loadController(matchResult);
+					let controllerInstance = this.doController(matchResult, controller);
+					let action = this.loadAction(matchResult, controllerInstance);
+					let paramObj = this.fixArgs(action);
+					this.doAction(matchResult, controllerInstance, action, paramObj);
 				}else{
-					this.request.errorObject = null;
+					this.noSomethingMatch();
 				}
-				
-				this.loadController(matchResult);
-			}catch(error){
-				if(this.config.env === 'dev' && !/match error/gi.test(error.message)){
-					console.log(error);
-				}
-				this.request.method = "GET";
-				this.config.urlPrefixPath = this.config.urlPrefixPath || "";
-				let targetError = error.code ? error : new ErrorException(error);
-				let defaultErrorController = path.join(this.config.urlPrefixPath, this.config.defaultErrorController);
-				
-				defaultErrorController = (((/^\/.+/.test(defaultErrorController))?"":"/")+defaultErrorController) || "";
-				Lobenton.getApp().forwardBridge(defaultErrorController, {}, this.request, this.response, targetError);
-			}
-		}.bind(this));
+			}.bind(this));
+		}catch(error){
+			this.execError(data, error);
+		}
 	}
 }
 

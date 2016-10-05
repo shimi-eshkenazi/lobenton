@@ -249,17 +249,17 @@ class BaseController extends BaseComponent {
 			
 			var sourceStateType = typeof sourceState;
 			if (sourceStateType !== 'object') {
-				throw new Error("Arguments of controller render must be object, " + sourceStateType + " given.");
+				throw new Error("Render Error : Arguments of controller render must be object, " + sourceStateType + " given.");
 			}
 		}else{
 			var passToLayoutWithoutReduxType = typeof passToLayoutWithoutRedux;
 			if (passToLayoutWithoutReduxType !== 'object') {
-				throw new Error("Argument 1 of controller render must be object, " + passToLayoutWithoutReduxType + " given.");
+				throw new Error("Render Error : Argument 1 of controller render must be object, " + passToLayoutWithoutReduxType + " given.");
 			}
 			
 			var sourceStateType = typeof sourceState;
 			if (sourceStateType !== 'object') {
-				throw new Error("Argument 2 of controller render must be object, " + sourceStateType + " given.");
+				throw new Error("Render Error : Argument 2 of controller render must be object, " + sourceStateType + " given.");
 			}
 		}
 		
@@ -283,7 +283,7 @@ class BaseController extends BaseComponent {
 				this.layout = this.layout.replace(/^src\//, "lib/");
 				layoutSource = require(this.layout);
 			}else{
-				throw new Error("Layout is not defined on action : " + this.layout);
+				throw new Error("Render Error : Layout is not defined on action : " + this.layout);
 			}
 
 			sourceState = this.beforeRender(sourceState);
@@ -298,7 +298,7 @@ class BaseController extends BaseComponent {
 					} else if (error) {
 						throw error;
 					} else if (!renderProps) {
-						throw new NotFoundException("Route match error : Cannot find route '"+this.request.url+"'");
+						throw new NotFoundException("Render Error : Route match error : Cannot find route '"+this.request.url+"'");
 					} else {
 						const routerContext = React.createElement(RouterContext, Object.assign({}, renderProps));
 						const i18nextProvider1 = React.createElement(I18nextProvider, { i18n : this.i18nDetectorInstance }, routerContext);
@@ -437,10 +437,7 @@ class BaseController extends BaseComponent {
 			data = data || {};
 			Lobenton.getApp().forwardBridge(this.request.url, data, this.request, this.response);
 		}else{
-			this.request.method = "GET";
-			const targetError = new ErrorException("Forward error : Cannot find pattern '"+controllerAction+"'");
-			const defaultErrorController = (((/^\/.+/.test(this.config.defaultErrorController))?"":"/")+this.config.defaultErrorController) || "";
-			Lobenton.getApp().forwardBridge(defaultErrorController, {}, this.request, this.response, targetError);
+			throw new ErrorException("Forward error : Cannot find pattern '"+controllerAction+"'");
 		}
 	}
 	

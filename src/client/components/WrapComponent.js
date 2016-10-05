@@ -7,6 +7,7 @@ export default function WrapComponent() {
 	const connectReturn = connect.apply(this, arguments);
 
 	return function wrap(component, css){
+		/*
 		class ErrorHandlerComponent extends component {
 			constructor( props, context ){
 				super( props, context );
@@ -21,8 +22,8 @@ export default function WrapComponent() {
 				}
 			}
 		};
-		
-		const vewCss = CSSModules(ErrorHandlerComponent, css, { allowMultiple : true });
+		*/
+		const vewCss = CSSModules(component, css, { allowMultiple : true });
 		const viewTranslate = translate([])(vewCss);
 		return connectReturn(viewTranslate);
 	};
