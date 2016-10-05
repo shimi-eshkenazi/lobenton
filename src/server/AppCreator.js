@@ -48,7 +48,10 @@ class AppCreator extends BaseComponent {
 				new RequestHandler(this.config);
 			}
 		}else{
-			this.reactRouter = require("lobenton/createRouter.js").default;
+			if(this.config.webpackDevConfig){
+				this.reactRouter = require("lobenton/createRouter.js").default;
+			}
+			
 			new RequestHandler(this.config, this.reactRouter);
 		}
 	}
