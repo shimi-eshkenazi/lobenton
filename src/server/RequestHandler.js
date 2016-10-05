@@ -371,28 +371,32 @@ class RequestHandler {
 	exec(data, errorObject) {
 		try {
 			this.runPrecessChain(function processChainResult(errorMag){
-				if(errorMag){
-					throw new ErrorException(errorMag);
-				}
+				try {
+					if(errorMag){
+						throw new ErrorException(errorMag);
+					}
 
-				let matchResult = this.testMatch();
-				
-				this.request.params = matchResult.paramMap;
-				this.request.errorObject = errorObject ? errorObject : null;
-				
-				if(typeof data === "object" && Object.keys(data).length > 0){
-					this.request.query = data;
-					this.request.body = {};
-				}
-				
-				if(matchResult.controller !== null){
-					let controller = this.loadController(matchResult);
-					let controllerInstance = this.doController(matchResult, controller);
-					let action = this.loadAction(matchResult, controllerInstance);
-					let paramObj = this.fixArgs(action);
-					this.doAction(matchResult, controllerInstance, action, paramObj);
-				}else{
-					this.noSomethingMatch();
+					let matchResult = this.testMatch();
+					
+					this.request.params = matchResult.paramMap;
+					this.request.errorObject = errorObject ? errorObject : null;
+					
+					if(typeof data === "object" && Object.keys(data).length > 0){
+						this.request.query = data;
+						this.request.body = {};
+					}
+					
+					if(matchResult.controller !== null){
+						let controller = this.loadController(matchResult);
+						let controllerInstance = this.doController(matchResult, controller);
+						let action = this.loadAction(matchResult, controllerInstance);
+						let paramObj = this.fixArgs(action);
+						this.doAction(matchResult, controllerInstance, action, paramObj);
+					}else{
+						this.noSomethingMatch();
+					}
+				}catch(e) {
+					this.execError(data, e);
 				}
 			}.bind(this));
 		}catch(error){
