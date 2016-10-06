@@ -1,6 +1,7 @@
 "use strict";
 
 var FileUtil = require("../utils/FileUtil.js").default;
+var TimerUtil = require("../utils/TimerUtil.js").default;
 var watch = require('node-watch');
 var path = require('path');
 var isListen = false;
@@ -66,6 +67,13 @@ function HMR(basePath, callback){
 		isListen = true;
 		
 		watch(srcDirPath, function(filename){
+			if(!FileUtil.isFile(filename)) {
+				return;
+			}
+			
+			TimerUtil.start(filename, true);
+			console.log("HMR building...");
+			
 			var targetFilePath = "";
 			
 			try{ 
@@ -84,6 +92,7 @@ function HMR(basePath, callback){
 				observers.map(function(observer){
 					observer(filename);
 				});
+				console.log("HMR built '"+filename+"' in "+TimerUtil.end(filename, true));
 			}catch(e){
 				console.log(e);
 			}
