@@ -317,7 +317,7 @@ class RequestHandler {
 		const UrlManager = Lobenton.getComponent("urlManager");
 		
 		if(this.request.hasOwnProperty("alreadyMatch")){
-			matchResult = this.request.alreadyMatch;
+			matchResult = Object.assign({}, this.request.alreadyMatch);
 			matchResult.paramMap = {};
 			matchResult.controllerPath = UrlManager.getConfig().controllerPath;
 		}else{
@@ -336,15 +336,16 @@ class RequestHandler {
 	}
 	
 	finalError(error) {
-		this.response.statusCode = error.code;
+		this.response.statusCode = error.code||500;
 		this.response.setHeader('Content-Type', 'text/html');
 		this.response.end("<pre>"+error.stack+"</pre>");
 	}
 	
 	execError(data, error) {
-		const re = new RegExp(this.config.defaultErrorController, "gi");
+		const controllerAction = this.config.defaultErrorController;
+		const controllerActionArray = controllerAction.split("/");
 		
-		if(re.test(this.request.url)){
+		if(this.request.hasOwnProperty("alreadyMatch") && this.request.alreadyMatch.controller === controllerActionArray[0]){
 			this.finalError(error);
 		}else{
 			this.request.method = "GET";
