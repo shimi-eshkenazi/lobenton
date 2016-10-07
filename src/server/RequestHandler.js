@@ -215,10 +215,10 @@ class RequestHandler {
 			const action = controllerInstance[matchResult.action];
 			
 			if(typeof action.method === 'string' && action.method.toUpperCase() !== this.request.method.toUpperCase()){
-				throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'; Url : "+this.request.url);
+				throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+matchResult.controller+"'; Url : "+this.request.url);
 			}else if(typeof action.method === 'object'){
 				if(action.method.indexOf(this.request.method.toUpperCase()) === -1){
-					throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+controllerInstance.controllerPath+"'; Url : "+this.request.url);
+					throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+matchResult.controller+"'; Url : "+this.request.url);
 				}
 			}
 			
