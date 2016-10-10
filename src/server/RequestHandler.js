@@ -348,23 +348,27 @@ class RequestHandler {
 		if(this.request.hasOwnProperty("alreadyMatch") && this.request.alreadyMatch.controller === controllerActionArray[0]){
 			this.finalError(error);
 		}else{
-			this.request.method = "GET";
-			const controllerAction = this.config.defaultErrorController;
-			const controllerActionArray = controllerAction.split("/");
-			
-			if(controllerActionArray.length === 2){
-				this.request.alreadyMatch = {
-					controller: controllerActionArray[0],
-					action: controllerActionArray[1]
-				};
-				data = data || {};
-				data.code = error.code || 500;
-				data.error_code = error.code || 500;
-				data.message = error.message || "Server Error";
-				data.error_message = error.message || "Server Error";
-				Lobenton.getApp().forwardBridge(this.request.url, data, this.request, this.response, error);
+			if(this.config.hasOwnProperty("defaultErrorController") && this.config.defaultErrorController !== ""){
+				this.request.method = "GET";
+				const controllerAction = this.config.defaultErrorController;
+				const controllerActionArray = controllerAction.split("/");
+				
+				if(controllerActionArray.length === 2){
+					this.request.alreadyMatch = {
+						controller: controllerActionArray[0],
+						action: controllerActionArray[1]
+					};
+					data = data || {};
+					data.code = error.code || 500;
+					data.error_code = error.code || 500;
+					data.message = error.message || "Server Error";
+					data.error_message = error.message || "Server Error";
+					Lobenton.getApp().forwardBridge(this.request.url, data, this.request, this.response, error);
+				}else{
+					this.finalError(new ErrorException("Forward error : Cannot find pattern '"+controllerAction+"'"));
+				}
 			}else{
-				this.finalError(new ErrorException("Forward error : Cannot find pattern '"+controllerAction+"'"));
+				this.finalError(error);
 			}
 		}
 	}
