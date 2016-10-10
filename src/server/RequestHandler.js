@@ -342,13 +342,13 @@ class RequestHandler {
 	}
 	
 	execError(data, error) {
-		const controllerAction = this.config.defaultErrorController;
-		const controllerActionArray = controllerAction.split("/");
-		
-		if(this.request.hasOwnProperty("alreadyMatch") && this.request.alreadyMatch.controller === controllerActionArray[0]){
-			this.finalError(error);
-		}else{
-			if(this.config.hasOwnProperty("defaultErrorController") && this.config.defaultErrorController !== ""){
+		if(this.config.hasOwnProperty("defaultErrorController") && this.config.defaultErrorController !== ""){
+			const controllerAction = this.config.defaultErrorController;
+			const controllerActionArray = controllerAction.split("/");
+			
+			if(this.request.hasOwnProperty("alreadyMatch") && this.request.alreadyMatch.controller === controllerActionArray[0]){
+				this.finalError(error);
+			}else{
 				this.request.method = "GET";
 				const controllerAction = this.config.defaultErrorController;
 				const controllerActionArray = controllerAction.split("/");
@@ -367,9 +367,9 @@ class RequestHandler {
 				}else{
 					this.finalError(new ErrorException("Forward error : Cannot find pattern '"+controllerAction+"'"));
 				}
-			}else{
-				this.finalError(error);
 			}
+		}else{
+			this.finalError(error);
 		}
 	}
 	
