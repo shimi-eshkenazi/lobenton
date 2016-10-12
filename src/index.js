@@ -12,7 +12,7 @@ if(path.sep === "/"){
 	rootDir = dirPath.replace(new RegExp(".+\\"+path.sep),'');
 }
 
-if(process.env.NODE_ENV === "dev" && !isStart){
+if((process.env.NODE_ENV === "dev" || process.env.NODE_ENV === "predev") && !isStart){
 	require('babel-core/register')
 }
 
