@@ -9,10 +9,10 @@ var bundle = {
 	bundle: [
 		'babel-polyfill',
 		'webpack-hot-middleware/client',
-		'./lib/client/index.js'
+		'./src/client/index.js'
 	],
-	en:['./lib/client/locales/en/en.js'],
-	zhTW: ['./lib/client/locales/zhTW/zhTW.js']
+	en:['./src/client/locales/en/en.js'],
+	zhTW: ['./src/client/locales/zhTW/zhTW.js']
 };
 var isEchoStart = false;
 var isEchoEnd = false;

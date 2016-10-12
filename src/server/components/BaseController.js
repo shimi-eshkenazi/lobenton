@@ -72,7 +72,7 @@ class BaseController extends BaseComponent {
 			
 			this.i18nDetector = new I18nDetector();
 			this.i18nDetector.setDefaultLanguage(I18nDetector.ZHTW);
-			this.i18nDetector.setLocalesPath("lib/client/locales");
+			this.i18nDetector.setLocalesPath(this.config.i18nFolder);
 			this.i18nDetector.detect(this.cookieMap);
 			this.i18nDetectorInstance = this.i18nDetector.getRealInstance();
 			this.language = this.i18nDetector.getLanguage();
@@ -218,7 +218,8 @@ class BaseController extends BaseComponent {
 	}
 	
 	dispatchToStore(sourceState) {
-		let mainReducers = require("lib/client/reducers");
+		const reducerSrc = process.env.NODE_ENV === "dev" && !this.config.isStart ? "src/client/reducers" : "lib/client/reducers";
+		let mainReducers = require(reducerSrc);
 		mainReducers = mainReducers.default || mainReducers;
 		
 		sourceState = sourceState || {};
@@ -280,7 +281,7 @@ class BaseController extends BaseComponent {
 			
 			if(this.layout){
 				// here is reading property give by user
-				this.layout = this.layout.replace(/^src\//, "lib/");
+				this.layout = (process.env.NODE_ENV === "dev" && !this.config.isStart) ? this.layout : this.layout.replace(/^src\//, "lib/");
 				layoutSource = require(this.layout);
 			}else{
 				throw new Error("Render Error : Layout is not defined on action : " + this.layout);
