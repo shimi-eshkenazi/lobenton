@@ -199,10 +199,11 @@ class RequestHandler {
 			controllerInstance.setRequest(this.request);
 			controllerInstance.setResponse(this.response);
 			controllerInstance.setNowHttpMethod(this.request.method.toUpperCase());
-			controllerInstance.setControllerPath(this.controllerPath);
 			controllerInstance.setHeaderMap(reqHeaders);
 			controllerInstance.setCookieMap(reqCookies);
 			controllerInstance.initial(true);
+			
+			
 			
 			return controllerInstance;
 		}catch(e){
@@ -210,9 +211,23 @@ class RequestHandler {
 		}
 	}
 	
-	loadAction(matchResult, controllerInstance) {
+	loadAction(matchResult, controller, controllerInstance) {
 		try {
-			const action = controllerInstance[matchResult.action];
+			let action = controllerInstance[matchResult.action];
+			
+			if(controller.hasOwnProperty(matchResult.action)){
+				if(controller.hasOwnProperty("layout")){
+					controllerInstance.layout = controller.layout;
+				}
+				
+				controller[matchResult.action] = FileUtil.fixDefProperties(controller[matchResult.action]);
+				
+				Object.keys(controller[matchResult.action]).map((key, index) => {
+					action[key] = controller[matchResult.action][key];
+				});
+			}else{
+				throw new NotFoundException("Annotation To Props Error : Cannot find action '"+matchResult.action+"' at '"+matchResult.controller+"'; Url : "+this.request.url);
+			}
 			
 			if(typeof action.method === 'string' && action.method.toUpperCase() !== this.request.method.toUpperCase()){
 				throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+matchResult.controller+"'; Url : "+this.request.url);
@@ -394,7 +409,7 @@ class RequestHandler {
 					if(matchResult.controller !== null){
 						let controller = this.loadController(matchResult);
 						let controllerInstance = this.doController(matchResult, controller);
-						let action = this.loadAction(matchResult, controllerInstance);
+						let action = this.loadAction(matchResult, controller, controllerInstance);
 						let paramObj = this.fixArgs(action);
 						this.doAction(matchResult, controllerInstance, action, paramObj);
 					}else{

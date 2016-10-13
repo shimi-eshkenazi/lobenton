@@ -135,9 +135,13 @@ class ClientRouterCreator extends BaseComponent {
 		}
 		
 		const str = ReactRouterUtil.createRouter(router);
-		const filepath = path.resolve(__dirname, "../../createRouter.js");
+		let createRouterFilepath = path.resolve(__dirname, "../../createRouter.js");
 		
-		writeFile(filepath, str, (err) => {
+		if(this.config.hasOwnProperty("routerFolder") && this.config.routerFolder !== ""){
+			 createRouterFilepath = path.join(this.config.basePath, this.config.routerFolder, "createRouter.js");
+		}
+		
+		writeFile(createRouterFilepath, str, (err) => {
 			if(err){
 				throw err;
 			}

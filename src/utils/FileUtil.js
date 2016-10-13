@@ -27,8 +27,6 @@ function getControllerLayout(source) {
 	let docExec = new RegExp("\\@layout\\:(((?!\\*).)*)\\*", "gi").exec(source);
 	docExec = docExec || [];
 	return docExec[1] || null;
-	//const docExec = new RegExp("this\.layout\=(\"|\')(((?!\\*).)*)(\"|\')", "gi").exec(source);
-	//return docExec[2] || null;
 }
 
 function getActionView(source) {
@@ -39,11 +37,21 @@ function getActionView(source) {
 
 function isSourceHasLayout(source) {
 	return /\@layout/g.test(source);
-	//return /this\.layout/g.test(source);
 }
 
 function isSourceHasView(source) {
 	return /\@view/g.test(source);
+}
+
+function fixMethodIfHasMulti(value) {
+	if(typeof value === 'string' && /\,/.test(value)){
+		value = value.split(",");
+		value = value.map(function(v){
+			return v.toUpperCase();
+		});
+	}
+	
+	return value;
 }
 
 class FileUtil {
@@ -89,6 +97,14 @@ class FileUtil {
 		return path.sep === "\\";
 	}
 	
+	static fixDefProperties(target){
+		target["login"] = target["login"] || false;
+		target["method"] = fixMethodIfHasMulti(target["method"]);
+		target["method"] = target["method"] || "GET";
+		
+		return target;
+	}
+	
 	static getParamFromDoc(mtd, source) {
 		let target = {};
 		const docExec = new RegExp("\\/\\*\\*.+"+mtd+"\\*(.+)\\*\\/"+mtd + "(\\s+|)\\(", "gi").exec(source);
@@ -118,13 +134,7 @@ class FileUtil {
 						case 'method':
 							let value = docToPatam[1];
 							
-							if(/\,/.test(value)){
-								value = value.split(",");
-								value = value.map(function(v){
-									return v.toUpperCase();
-								});
-							}
-							
+							value = fixMethodIfHasMulti(value);
 							target[key] = value || "GET";
 							break;
 						default:
@@ -135,36 +145,9 @@ class FileUtil {
 			});
 		}
 		
-		target["login"] = target["login"] || false;
-		target["method"] = target["method"] || "GET";
+		target = FileUtil.fixDefProperties(target);
 				
 		return target;
-	}
-	
-	static fixControllerLayout(target, source) {
-		if(!source){
-			source = FileUtil.getFile(target.controllerPath+".js");
-		}
-		
-		const controllerLayout = getControllerLayout(source);
-		
-		target.layout = controllerLayout;
-	}
-	
-	static fixControllerMethod(target, source) {
-		if(!source){
-			source = FileUtil.getFile(target.controllerPath+".js");
-		}
-		
-		Utils.getAllMethods(target.constructor.prototype).forEach(function forEachPrototype(mtd) {
-			if(mtd !== "constructor"){
-				const docParams = FileUtil.getParamFromDoc(mtd, source);
-				
-				Object.keys(docParams).map(function loopDocParams(param){
-					target[mtd][param] = docParams[param];
-				});
-			}
-		});
 	}
 	
 	static isControllerHasLayoutAndView(source) {

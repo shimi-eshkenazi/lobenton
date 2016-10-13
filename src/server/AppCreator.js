@@ -1,5 +1,6 @@
 "use strict";
 
+import path from "path";
 import RequestHandler from "./RequestHandler.js";
 import ConponentCreator from "./ConponentCreator";
 import {BaseComponent} from 'lobenton';
@@ -17,6 +18,12 @@ class AppCreator extends BaseComponent {
 	initial () {
 		this.createComponents(true);
 		
+		let createRouterFilepath = path.resolve(__dirname, "../../createRouter.js");
+		
+		if(this.config.hasOwnProperty("routerFolder") && this.config.routerFolder !== ""){
+			 createRouterFilepath = path.join(this.config.basePath, this.config.routerFolder, "createRouter.js");
+		}
+		
 		if(process.env.NODE_ENV === "dev" && !this.config.isStart){
 			// 有 webpack config 才做事 
 			if(this.config.webpackDevConfig){
@@ -28,6 +35,10 @@ class AppCreator extends BaseComponent {
 			let HMR = require("./HMR.js");
 			HMR = HMR.default || HMR;	
 			HMR.change(function change(filePath) {
+				if(/createRouter\.js/.test(filePath)){
+					return;
+				}
+				
 				this.components = {"Log":this.components["Log"]};
 				this.createComponents(false);
 				
@@ -40,7 +51,7 @@ class AppCreator extends BaseComponent {
 
 			if(this.config.webpackDevConfig){
 				this.clientRouterCreator.after(function after() {
-					this.reactRouter = require("lobenton/createRouter.js").default;
+					this.reactRouter = require(createRouterFilepath).default;
 					new RequestHandler(this.config, this.reactRouter);
 				}.bind(this));
 				this.clientRouterCreator.initial();
@@ -49,7 +60,7 @@ class AppCreator extends BaseComponent {
 			}
 		}else{
 			if(this.config.webpackDevConfig){
-				this.reactRouter = require("lobenton/createRouter.js").default;
+				this.reactRouter = require(createRouterFilepath).default;
 			}
 			
 			new RequestHandler(this.config, this.reactRouter);

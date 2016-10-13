@@ -27,7 +27,6 @@ class BaseController extends BaseComponent {
 		this.layout = null;
 		this.controller = null;
 		this.action = null;
-		this.controllerPath = null;
 		this.request = null;
 		this.response = null;
 		this.reactRouter = null;
@@ -51,18 +50,6 @@ class BaseController extends BaseComponent {
 	}
 	
 	initial(fromRequest) {
-		if (path.sep === "\\") {
-        this.controllerPath = this.controllerPath.replace(/\\lib\\/g,"\\src\\");
-    }else{
-        this.controllerPath = this.controllerPath.replace(/\/lib\//g,"/src/");
-    }
-		
-		if(!this.layout){
-			FileUtil.fixControllerLayout(this);
-		}
-		
-		FileUtil.fixControllerMethod(this);
-		
 		if(this.config.webpackDevConfig && fromRequest === true){
 			this.deviceDetector  = new DeviceDetector();
 			this.deviceDetector.setDefaultDevice(DeviceDetector.DESKTOP);
@@ -77,10 +64,6 @@ class BaseController extends BaseComponent {
 			this.i18nDetectorInstance = this.i18nDetector.getRealInstance();
 			this.language = this.i18nDetector.getLanguage();
 		}
-	}
-	
-	setControllerPath(controllerPath) {
-		this.controllerPath = controllerPath;
 	}
 	
 	setRequest (request) {
@@ -284,7 +267,7 @@ class BaseController extends BaseComponent {
 				this.layout = (process.env.NODE_ENV === "dev" && !this.config.isStart) ? this.layout : this.layout.replace(/^src\//, "lib/");
 				layoutSource = require(this.layout);
 			}else{
-				throw new Error("Render Error : Layout is not defined on action : " + this.layout);
+				throw new Error("Render Error : Layout is not defined on constructor of controller : " + this.controller);
 			}
 
 			sourceState = this.beforeRender(sourceState);
