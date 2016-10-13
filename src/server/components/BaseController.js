@@ -318,7 +318,7 @@ class BaseController extends BaseComponent {
 						}
 						
 						html = this.afterRender(html);
-						this.response.setHeader('Content-Type', 'text/html');
+						this.response.setHeader('Content-Type', 'text/html; charset=utf-8');
 						this.response.setHeader('X-Powered-By', 'Lobenton');
 						this.sendBody(200, html);
 					}
@@ -341,12 +341,12 @@ class BaseController extends BaseComponent {
 			return this.jsonp(result, paramMap.callback);
 		}
 		
-		this.response.setHeader('Content-Type', 'application/json');
+		this.response.setHeader('Content-Type', 'application/json; charset=utf-8');
 		this.sendBody(200, JSON.stringify(result));
 	}
 	
 	jsonp(result, callbackName) {
-		this.response.setHeader('Content-Type', 'application/javascript');
+		this.response.setHeader('Content-Type', 'application/javascript; charset=utf-8');
 		this.sendBody(200, callbackName+"("+JSON.stringify(result)+")");
 	}
 	
