@@ -43,6 +43,10 @@ module.exports = function webpackDevConfigMain(config) {
 			new webpack.HotModuleReplacementPlugin(),
 			new webpack.NoErrorsPlugin(),
 			new webpack.optimize.OccurenceOrderPlugin(),
+			new webpack.DllReferencePlugin({
+					context: rootPath,
+					manifest: require(path.join(rootPath, '/manifest.json')),
+				}),
 			new WebpackShellPlugin({ 
 				onBuildStart: [function(){
 					if(!isEchoStart){
