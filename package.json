@@ -1,6 +1,6 @@
 {
   "name": "lobenton",
-  "version": "0.27.1",
+  "version": "0.27.2",
   "description": "Lobenton! Easy to create a web application.",
   "license": "MIT",
   "author": "Rex Chen <rexhome7326@gmail.com>",
@@ -12,7 +12,8 @@
   "main": "./lib/index.js",
   "port": "3000",
   "scripts": {
-    "babel": "babel src --out-dir lib --copy-files"
+    "babel": "babel src --out-dir lib --copy-files",
+    "prepublish": "npm run babel"
   },
   "bin": {
     "lobenton": "./bin/lobenton.js"

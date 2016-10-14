@@ -38,7 +38,7 @@ function createDevMiddleware(webpackDevConfig){
 	}
 	
 	devMiddleware = WebpackDevMiddleware(compiler, {
-		noInfo: true, 
+		noInfo: false, 
 		publicPath: webpackDevConfig.output.publicPath,
 		stats: {
 			colors: true 
