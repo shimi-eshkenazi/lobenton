@@ -68,7 +68,7 @@ class AppCreator extends BaseComponent {
 	}
 	
 	initialSimple(router) {
-		this.createComponents(true);
+		this.createComponents(false);
 		
 		if(router !== false){
 			this.clientRouterCreator = new ClientRouterCreator();
