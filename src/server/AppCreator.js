@@ -67,12 +67,17 @@ class AppCreator extends BaseComponent {
 		}
 	}
 	
-	initialSimple() {
+	initialSimple(router) {
 		this.createComponents(true);
-		this.clientRouterCreator = new ClientRouterCreator();
-		this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
-		this.clientRouterCreator.setConfig(this.config);
-		this.clientRouterCreator.initial();
+		
+		if(router !== false){
+			this.clientRouterCreator = new ClientRouterCreator();
+			this.clientRouterCreator.setUrlManager(this.components["UrlManager"]);
+			this.clientRouterCreator.setConfig(this.config);
+			this.clientRouterCreator.initial();
+		}
+		
+		new RequestHandler(this.config, this.reactRouter);
 	}
 	
 	createComponents(noLog) {

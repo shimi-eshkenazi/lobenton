@@ -56,7 +56,7 @@ class Lobenton {
 		return this.creator.initial();
 	}
 	
-	static runSimple(){
+	static runSimple(router){
 		return this.creator.initialSimple();
 	}
 	

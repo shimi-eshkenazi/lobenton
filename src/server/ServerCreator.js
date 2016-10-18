@@ -34,10 +34,10 @@ class ServerCreator extends BaseComponent {
 		return this.getServer();
 	}
 	
-	initialSimple() {
+	initialSimple(router) {
 		this.app = new AppCreator(); 
 		this.app.setConfig(this.config);
-		this.app.initialSimple();
+		this.app.initialSimple(router);
 		
 		return this.getHandleRequest();
 	}

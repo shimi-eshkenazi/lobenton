@@ -201,7 +201,7 @@ class BaseController extends BaseComponent {
 	}
 	
 	dispatchToStore(sourceState) {
-		const reducerSrc = process.env.NODE_ENV === "dev" && !this.config.isStart ? "src/client/reducers" : "lib/client/reducers";
+		const reducerSrc = (process.env.NODE_ENV === "dev" && !this.config.isStart) ? "src/client/reducers" : "lib/client/reducers";
 		let mainReducers = require(reducerSrc);
 		mainReducers = mainReducers.default || mainReducers;
 		
