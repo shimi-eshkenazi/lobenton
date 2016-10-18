@@ -31,13 +31,15 @@ class ServerCreator extends BaseComponent {
 		this.server.on('error', this.onError.bind(this));
 		this.server.on('listening', this.onListening.bind(this));
 		
-		return this.server;
+		return this.getServer();
 	}
 	
 	initialSimple() {
 		this.app = new AppCreator(); 
 		this.app.setConfig(this.config);
 		this.app.initialSimple();
+		
+		return this.getHandleRequest();
 	}
 	
 	getServer() {
@@ -46,6 +48,10 @@ class ServerCreator extends BaseComponent {
 	
 	getApp() {
 		return this.app; 
+	}
+	
+	getHandleRequest() {
+		return this.getApp().handleRequest.bind(this.getApp());
 	}
 	
 	onError(error){
