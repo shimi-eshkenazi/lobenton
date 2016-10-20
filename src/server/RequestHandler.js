@@ -76,7 +76,10 @@ class RequestHandler {
 			let webpackDevConfigMain = require(this.config.webpackDevConfig);
 			webpackDevConfigMain = webpackDevConfigMain.default || webpackDevConfigMain;
 			
-			const webpackDevConfig = webpackDevConfigMain(this.config);
+			let webpackDevConfig = webpackDevConfigMain;
+			if(typeof webpackDevConfigMain === 'function'){
+				webpackDevConfig = webpackDevConfigMain({name: this.config.name});
+			}
 			
 			if(this.config.hasOwnProperty("webpackDevConfig")){
 				if(!compiler){

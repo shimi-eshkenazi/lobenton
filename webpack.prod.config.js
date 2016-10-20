@@ -2,6 +2,8 @@
 
 var path = require('path');
 var webpack = require('webpack');
+var HappyPack = require('happypack');
+var deepAssign = require("deep-assign");
 var ExtracTextPlugin = require('extract-text-webpack-plugin');
 var rootPath = path.resolve(__dirname, path.relative(__dirname,''));
 var bundle = {
@@ -14,7 +16,7 @@ var bundle = {
 };
 
 module.exports = function webpackBundleConfigMain(config) {
-	return {
+	return deepAssign({
 		debug: true,
 		context: rootPath,
 		devtool: 'eval',
@@ -33,9 +35,22 @@ module.exports = function webpackBundleConfigMain(config) {
 		plugins: [
 			new webpack.DefinePlugin({
 				'process.env': {
-					NODE_ENV: JSON.stringify("lab")
+					NODE_ENV: "window.env"
 				}
 			}),
+			new HappyPack({
+	      cache: true,
+	      loaders: [
+	        {
+	          path: 'babel-loader',
+	          query: {
+	            cacheDirectory: false
+	          }
+	        }
+	      ],
+	      threads: 8
+	    }),
+			new webpack.optimize.OccurenceOrderPlugin(),
 			new webpack.optimize.UglifyJsPlugin({
 				compress: {
 					warnings: false
@@ -47,15 +62,21 @@ module.exports = function webpackBundleConfigMain(config) {
 		],
 		module: {
 			loaders: [
-				{
+				/*{
 					test: /\.js$/,
 					loader: 'babel-loader',
-					exclude: /node_modules/,//\/(?!lobenton)
-					include: rootPath,
+					exclude: /node_modules/,
+					include: rootPath+"/src",
 					query: {
 						plugins: [],
 						compact: false
 					}
+				},*/
+				{
+					test: /\.js$/,
+					loader: 'happypack/loader',
+					exclude: /node_modules/,
+					include: rootPath+"/src"
 				},
 				{
 					test: /\.css$/,
@@ -80,5 +101,5 @@ module.exports = function webpackBundleConfigMain(config) {
 	      }
 	    ]
 		}
-	};
+	}, config);
 };

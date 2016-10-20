@@ -51,19 +51,24 @@ class AppCreator extends BaseComponent {
 
 			if(this.config.webpackDevConfig){
 				this.clientRouterCreator.after(function after() {
-					this.reactRouter = require(createRouterFilepath).default;
-					new RequestHandler(this.config, this.reactRouter);
+					new RequestHandler(this.config);
+					
+					setTimeout(function(){
+						this.reactRouter = require(createRouterFilepath).default;
+					}.bind(this), 0);
 				}.bind(this));
 				this.clientRouterCreator.initial();
 			}else{
 				new RequestHandler(this.config);
 			}
 		}else{
-			if(this.config.webpackDevConfig){
-				this.reactRouter = require(createRouterFilepath).default;
-			}
+			new RequestHandler(this.config);
 			
-			new RequestHandler(this.config, this.reactRouter);
+			setTimeout(function(){
+				if(this.config.webpackDevConfig){
+					this.reactRouter = require(createRouterFilepath).default;
+				}
+			}.bind(this), 0);
 		}
 	}
 	

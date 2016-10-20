@@ -2,6 +2,8 @@
 
 var path = require("path");
 var webpack = require("webpack");
+var HappyPack = require('happypack');
+var deepAssign = require("deep-assign");
 var WebpackShellPlugin = require("./plugins/WebpackShellPlugin");
 var TimerUtil = require("./lib/utils/TimerUtil").default;
 var rootPath = path.resolve(__dirname, path.relative(__dirname,''));
@@ -18,7 +20,7 @@ var isEchoStart = false;
 var isEchoEnd = false;
 
 module.exports = function webpackDevConfigMain(config) {
-	return {
+	return deepAssign({
 		debug: true,
 		context: rootPath,
 		devtool: 'eval',
@@ -37,26 +39,31 @@ module.exports = function webpackDevConfigMain(config) {
 		plugins: [
 			new webpack.DefinePlugin({
 				'process.env': {
-					NODE_ENV: JSON.stringify("dev")
+					NODE_ENV: "window.env"
 				}
 			}),
+			new HappyPack({
+	      cache: true,
+	      loaders: [
+	        {
+	          path: 'babel-loader',
+	          query: {
+	            cacheDirectory: false
+	          }
+	        }
+	      ],
+	      threads: 8
+	    }),
 			new webpack.HotModuleReplacementPlugin(),
 			new webpack.NoErrorsPlugin(),
-			new webpack.optimize.OccurenceOrderPlugin(),
-			new webpack.DllReferencePlugin({
-					context: rootPath,
-					manifest: require(path.join(rootPath, '/manifest.json')),
-				}),
 			new WebpackShellPlugin({ 
 				onBuildStart: [function(){
 					if(!isEchoStart){
-						//console.log('webpack start');
 						isEchoStart = true;
 					}
 				}],
 				onBuildEnd: [function(){
 					if(!isEchoEnd){
-						//console.log('webpack end');
 						setTimeout(function(){
 							TimerUtil.end("Load lobenton");
 						}, 0);
@@ -68,26 +75,21 @@ module.exports = function webpackDevConfigMain(config) {
 		],
 		module: {
 			loaders: [
-				{
+				/*{
 					test: /\.js$/,
 					loader: 'babel-loader',
-					exclude: /node_modules/,//\/(?!lobenton)
-					include: rootPath,
+					exclude: /node_modules/,
+					include: rootPath+"/src",
 					query: {
-						plugins: [
-							[
-								'react-transform', 
-								{
-									'transforms': [{
-										'transform': 'react-transform-hmr',
-										'imports': ['react'],
-										'locals': ['module']
-									}]
-								}
-							]
-						],
+						plugins: [],
 						compact: false
 					}
+				},*/
+				{
+					test: /\.js$/,
+					loader: 'happypack/loader',
+					exclude: /node_modules/,
+					include: rootPath+"/src"
 				},
 				{
 					test: /\.css$/,
@@ -112,5 +114,5 @@ module.exports = function webpackDevConfigMain(config) {
 	      }
 			]
 		}
-	};
+	}, config);
 };
