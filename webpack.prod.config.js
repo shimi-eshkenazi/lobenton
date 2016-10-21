@@ -76,7 +76,7 @@ module.exports = function webpackBundleConfigMain(config) {
 					test: /\.js$/,
 					loader: 'happypack/loader',
 					exclude: /node_modules/,
-					include: rootPath+"/src"
+					include: rootPath
 				},
 				{
 					test: /\.css$/,

@@ -2,7 +2,7 @@
 
 var path = require("path");
 var webpack = require("webpack");
-var HappyPack = require('happypack');
+//var HappyPack = require('happypack');
 var deepAssign = require("deep-assign");
 var WebpackShellPlugin = require("./plugins/WebpackShellPlugin");
 var TimerUtil = require("./lib/utils/TimerUtil").default;
@@ -42,7 +42,7 @@ module.exports = function webpackDevConfigMain(config) {
 					NODE_ENV: "window.env"
 				}
 			}),
-			new HappyPack({
+			/*new HappyPack({
 	      cache: true,
 	      loaders: [
 	        {
@@ -53,7 +53,7 @@ module.exports = function webpackDevConfigMain(config) {
 	        }
 	      ],
 	      threads: 8
-	    }),
+	    }),*/
 			new webpack.HotModuleReplacementPlugin(),
 			new webpack.NoErrorsPlugin(),
 			new WebpackShellPlugin({ 
@@ -89,7 +89,7 @@ module.exports = function webpackDevConfigMain(config) {
 					test: /\.js$/,
 					loader: 'happypack/loader',
 					exclude: /node_modules/,
-					include: rootPath+"/src"
+					include: rootPath
 				},
 				{
 					test: /\.css$/,
