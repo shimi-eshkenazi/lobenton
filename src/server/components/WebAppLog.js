@@ -11,6 +11,10 @@ function createAppenders(config) {
 	Object.keys(config.rules).map(function loopRule(levelName, index) {
 		let levelSetting = config.rules[levelName];
 		
+		if(levelSetting.enabled === false){
+			return;
+		}
+		
 		levelSetting.type = "file",
 		levelSetting.category = levelName;
 		
