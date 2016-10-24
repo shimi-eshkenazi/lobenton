@@ -15,7 +15,7 @@ function createAppenders(config) {
 			return;
 		}
 		
-		levelSetting.type = "file",
+		levelSetting.type = levelSetting.type || "file",
 		levelSetting.category = levelName;
 		
 		if(levelSetting.hasOwnProperty("filename")){

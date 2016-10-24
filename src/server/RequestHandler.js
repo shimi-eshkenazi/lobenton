@@ -196,6 +196,7 @@ class RequestHandler {
 			const reqCookies = this.request.cookies || {};
 			
 			controllerInstance = new controller();
+			controllerInstance.setMatchResult(matchResult);
 			controllerInstance.setController(matchResult.controller);
 			controllerInstance.setConfig(this.config);
 			controllerInstance.setReactRouter(this.reactRouter);
@@ -205,8 +206,6 @@ class RequestHandler {
 			controllerInstance.setHeaderMap(reqHeaders);
 			controllerInstance.setCookieMap(reqCookies);
 			controllerInstance.initial(true);
-			
-			
 			
 			return controllerInstance;
 		}catch(e){

@@ -140,7 +140,8 @@ class WebAppUrlManager extends BaseComponent {
 		let matchResult = {
 			controller : null,
 			action : null,
-			paramMap: {}
+			paramMap: {},
+			pattern: null
 		};
 		
 		pathname = pathname === "/" ? "/" : pathname.replace(/\/$/,"");
@@ -172,6 +173,8 @@ class WebAppUrlManager extends BaseComponent {
 					
 					return newObj;
 				}, {});
+				
+				matchResult.pattern = rule;
 				
 				alreadyMatched = true;
 			}

@@ -29,6 +29,7 @@ class BaseController extends BaseComponent {
 		this.action = null;
 		this.request = null;
 		this.response = null;
+		this.matchResult = null;
 		this.reactRouter = null;
 		this.httpMethod = null;
 		this.httpCode = null;
@@ -80,6 +81,10 @@ class BaseController extends BaseComponent {
 	
 	getResponse () {
 		return this.response;
+	}
+	
+	setMatchResult (matchResult) {
+		this.matchResult = matchResult;
 	}
 	
 	setReactRouter(reactRouter) {
