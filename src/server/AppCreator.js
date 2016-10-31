@@ -10,6 +10,7 @@ import Utils from "../utils/Utils.js";
 class AppCreator extends BaseComponent {
 	constructor () {
 		super();
+		this.simple = false;
 		this.reactRouter = null;
 		this.components = {};
 		this.clientRouterCreator = null;
@@ -73,6 +74,7 @@ class AppCreator extends BaseComponent {
 	}
 	
 	initialSimple(router) {
+		this.simple = true;
 		this.createComponents(false);
 		
 		if(router !== false){
@@ -147,6 +149,7 @@ class AppCreator extends BaseComponent {
 	
 	handleRequest(request, response, data, errorObject) {
 		let handler = new RequestHandler(this.config, this.reactRouter);
+		handler.setSimple(this.simple);
 		handler.setRequest(request);
 		handler.setResponse(response);
 		handler.exec(data, errorObject);

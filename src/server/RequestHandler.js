@@ -101,6 +101,10 @@ class RequestHandler {
 		this.addMiddleWare();
 	}
 	
+	setSimple(isSimple) {
+		this.simple = isSimple;
+	}
+	
 	addMiddleWare() {
 		if(this.config.hasOwnProperty("middlewares")){
 			Object.keys(this.config.middlewares).map(function loopMD(middlewareName) {
@@ -359,7 +363,9 @@ class RequestHandler {
 	}
 	
 	execError(data, error) {
-		if(this.config.hasOwnProperty("defaultErrorController") && this.config.defaultErrorController !== ""){
+		if(this.simple){
+			this.finalError(error);
+		}else if(this.config.hasOwnProperty("defaultErrorController") && this.config.defaultErrorController !== ""){
 			const controllerAction = this.config.defaultErrorController;
 			const controllerActionArray = controllerAction.split("/");
 			
