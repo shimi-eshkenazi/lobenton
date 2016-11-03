@@ -9,10 +9,10 @@ var rootPath = path.resolve(__dirname, path.relative(__dirname,''));
 var bundle = {
 	bundle: [
 		'babel-polyfill',
-		'./src/client/index.js',
+		'./lib/client/index.js',
 	],
-	en:['./src/client/locales/en/en.js'],
-	zhTW: ['./src/client/locales/zhTW/zhTW.js']
+	en:['./lib/client/locales/en/en.js'],
+	zhTW: ['./lib/client/locales/zhTW/zhTW.js']
 };
 
 module.exports = function webpackBundleConfigMain(config) {
