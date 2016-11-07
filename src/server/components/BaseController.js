@@ -16,7 +16,6 @@ import BaseComponent from "./BaseComponent.js";
 import FileUtil from "../../utils/FileUtil.js";
 import DeviceDetector from "../../utils/DeviceDetector.js";
 import I18nDetector from "../../utils/I18nDetector.js";
-import App from "../../client/components/App.js";
 import ConfigureStore from "../../client/store/ConfigureStore.js";
 
 let Lobenton = null;
