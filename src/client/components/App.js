@@ -13,6 +13,10 @@ class App extends Component {
 	}
 	
 	render() {
+		let props = Object.assign({}, this.props);
+		
+		delete props.children;
+		
 		return React.cloneElement(this.props.children, {
 			getParamMap : this.getParamMap.bind(this),
 			...this.props
