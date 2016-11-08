@@ -19,7 +19,7 @@ class App extends Component {
 		
 		return React.cloneElement(this.props.children, {
 			getParamMap : this.getParamMap.bind(this),
-			...this.props
+			...props
 		});
 	}
 }
