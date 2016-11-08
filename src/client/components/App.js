@@ -1,6 +1,7 @@
 "use strict";
 
 import React, { Component } from 'react';
+import { withRouter } from 'react-router';
 
 class App extends Component {
 	constructor( props, context ){
@@ -19,4 +20,4 @@ class App extends Component {
 	}
 }
 
-export default App;
+export default withRouter(App);
