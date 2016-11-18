@@ -107,7 +107,7 @@ class RequestHandler {
 	
 	addMiddleWare() {
 		if(this.config.hasOwnProperty("middlewares")){
-			Object.keys(this.config.middlewares).map(function loopMD(middlewareName) {
+			for(var middlewareName in this.config.middlewares){
 				const mdSetting = this.config.middlewares[middlewareName];
 				let mdInstance = RequireByFormat(mdSetting.path);
 				
@@ -123,7 +123,7 @@ class RequestHandler {
 				
 				Object.defineProperty(func, 'name', {value: middlewareName, configurable: true});
 				this.processChain.push(func);
-			}.bind(this));
+			}
 		}
 	}
 	
@@ -228,9 +228,11 @@ class RequestHandler {
 				
 				controller[matchResult.action] = FileUtil.fixDefProperties(controller[matchResult.action]);
 				
-				Object.keys(controller[matchResult.action]).map((key, index) => {
+				var index = 0;
+				for(var key in controller[matchResult.action]){
 					action[key] = controller[matchResult.action][key];
-				});
+					index++;
+				}
 			}else{
 				throw new NotFoundException("Annotation To Props Error : Cannot find action '"+matchResult.action+"' at '"+matchResult.controller+"'; Url : "+this.request.url);
 			}
@@ -252,9 +254,9 @@ class RequestHandler {
 	doAction(matchResult, controllerInstance, action, paramObj) {
 		try {
 			if(action.hasOwnProperty("login")) {
-				Object.keys(action).map(function loopDocProp(prop) {
+				for(var prop in action){
 					controllerInstance.set(prop, action[prop]);
-				});
+				}
 				
 				controllerInstance.afterContinue(function checkLogin(result){
 					try {

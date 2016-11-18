@@ -85,16 +85,16 @@ function toRuleMap(rule, ruleValue) {
 		return Object.keys(ruleValue).reduce(function loopRule(newObj, subRuleHasRegex, subRuleHasRegexIndex) {
 			const ruleValueMap = toRuleMap(subRuleHasRegex, ruleValue[subRuleHasRegex]);
 			
-			Object.keys(ruleValueMap).map(function loop(ruleValueMapRegex){
+			for(var ruleValueMapRegex in ruleValueMap){
 				const ruleMap =  patternToMap(rule);
 				const ruleValueMapMapping = ruleValueMap[ruleValueMapRegex];
 				
 				if(ruleMap.regex){
 					let newMapping = ruleMap.mapping;
 					
-					Object.keys(ruleValueMapMapping).map(function loopParam(param) {
+					for(var param in ruleValueMapMapping){
 						newMapping[param] = ruleValueMapMapping[param];
-					});
+					}
 					
 					if(/^\\\/$/.test(ruleMap.regex)){
 						newObj[ruleValueMapRegex] = newMapping;
@@ -104,7 +104,7 @@ function toRuleMap(rule, ruleValue) {
 				}else{
 					newObj[ruleValueMapRegex] = ruleValueMapMapping;	
 				}
-			});
+			}
 			
 			return newObj;
 		}, {});
@@ -150,7 +150,7 @@ class WebAppUrlManager extends BaseComponent {
 			return matchResult;
 		}
 
-		rulesRegex.map(function loopRule(rule) {
+		for(var rule in this.rulesRegex){
 			const newRule = rule.replace(/(.+)\\\/$/,"$1");
 			const testRegex = new RegExp("^"+newRule+"$");
 			const result = testRegex.exec(pathname);
@@ -178,7 +178,7 @@ class WebAppUrlManager extends BaseComponent {
 				
 				alreadyMatched = true;
 			}
-		}.bind(this));
+		}
 		
 		if(matchResult.paramMap.controller){
 			matchResult.controller = matchResult.paramMap.controller;

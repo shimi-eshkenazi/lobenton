@@ -45,10 +45,14 @@ function isSourceHasView(source) {
 
 function fixMethodIfHasMulti(value) {
 	if(typeof value === 'string' && /\,/.test(value)){
+		var temp = [];
 		value = value.split(",");
-		value = value.map(function(v){
-			return v.toUpperCase();
-		});
+		
+		for(var i = 0; i < value.length; i++){
+			temp.push(value[i].toUpperCase());
+		}
+		
+		return temp;
 	}
 	
 	return value;
@@ -112,7 +116,9 @@ class FileUtil {
 		if(docExec !== null){
 			const docArray = typeof docExec[1] !== "undefined" ? docExec[1].split("*") : [];
 			
-			docArray.map(function loopDoc(doc) {
+			for(var i = 0; i < docArray.length; i++){
+				var doc = docArray[i];
+				
 				if(/\:/.test(doc)) {
 					const docToPatam = doc.split(":");
 					const key = docToPatam[0].replace("@","");
@@ -142,7 +148,7 @@ class FileUtil {
 							break;
 					}
 				}
-			});
+			}
 		}
 		
 		target = FileUtil.fixDefProperties(target);
@@ -200,11 +206,11 @@ class FileUtil {
 		sourcePath = path.resolve(sourcePath, "./"+expressionArray[0].replace(/\/.+/g,""));
 		sourcePath = path.resolve(sourcePath, "./src/server");
 		
-		expressionArray.map(function(node, index){
+		for(var index = 0; index < expressionArray.length; index++){
 			if(index !== 0){
-				sourcePath = path.resolve(sourcePath, node);
+				sourcePath = path.resolve(sourcePath, expressionArray[index]);
 			}
-		});
+		}
 		
 		return sourcePath;
 	}

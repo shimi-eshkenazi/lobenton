@@ -8,11 +8,11 @@ import {BaseComponent} from 'lobenton';
 function createAppenders(config) {
 	let newAppenders = [];
 	
-	Object.keys(config.rules).map(function loopRule(levelName, index) {
+	for(var levelName in config.rules){
 		let levelSetting = config.rules[levelName];
 		
 		if(levelSetting.enabled === false){
-			return;
+			continue;
 		}
 		
 		levelSetting.type = levelSetting.type || "file",
@@ -35,7 +35,7 @@ function createAppenders(config) {
 		}
 		
 		newAppenders.push(levelSetting);
-	});
+	}
 	
 	return newAppenders;
 }

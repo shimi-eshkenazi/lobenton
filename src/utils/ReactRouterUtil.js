@@ -41,7 +41,7 @@ class ReactRouterUtil {
 		let isAddTab = false;
 		prefixName = prefixName || '';
 		
-		Object.keys(target).map(function loopRoute(route) {
+		for(var route in target){
 			const routeValue = target[route];
 			const docParams = routeValue.pattern ? Object.keys(routeValue.pattern.docParams) : [];
 			const paramStr = docParams.reduce(function reduceParam(str, param, index) {
@@ -81,7 +81,7 @@ class ReactRouterUtil {
 			}else if(routeValue.pattern === '' && routeValue.subRules !== null){
 				this.toJsxRoute(routeValue.subRules, prefixName+route, tab);
 			}
-		}.bind(this));
+		}
 	}
 	
 	transformToFile() {

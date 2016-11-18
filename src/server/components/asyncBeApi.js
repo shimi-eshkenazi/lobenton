@@ -30,8 +30,10 @@ function asyncBeApi(config, req){
 				if(/\:.+/.test(target)){
 					var targetArray = target.split('/');
 					var namespaceAry = [];
-				
-					targetArray.map(function spaceHandle(space){
+					
+					for(var i = 0; i < targetArray.length; i++){
+						var space = targetArray[i];
+						
 						if(space){
 							if(/\:.+/.test(space)){
 								var name = space.replace(':', '');
@@ -44,7 +46,7 @@ function asyncBeApi(config, req){
 								namespaceAry.push(space);
 							}
 						}
-					});
+					}
 					
 					namespace = '/' + namespaceAry.join('/');
 				}else{

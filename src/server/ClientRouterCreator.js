@@ -38,7 +38,9 @@ class ClientRouterCreator extends BaseComponent {
 	
 	initial() {
 		try{
-			this.urlManager.config.controllerPath.map(function loopPath(controllerPath, index){
+			for(var index = 0; index < this.urlManager.config.controllerPath.length; index++){
+				var controllerPath = this.urlManager.config.controllerPath[index];
+				
 				let sourcePath = null;
 				
 				if(/\./.test(controllerPath)){
@@ -50,16 +52,18 @@ class ClientRouterCreator extends BaseComponent {
 				}
 				
 				if(/node_modules/.test(sourcePath)){
-					return;
+					continue;
 				}
 				
 				const controllerList =  FileUtil.getFileList(sourcePath)
 				
-				controllerList.map(function loop(fileName) {
+				for(var i = 0; i < controllerList.length; i++){
+					var fileName = controllerList[i];
+					
 					const filePath = path.join(sourcePath, fileName);		
 					this.addControllerToMap(filePath);
-				}.bind(this));
-			}.bind(this));
+				}
+			}
 			
 			this.buildRouter();
 		}catch(e){console.log(e);}
@@ -152,7 +156,7 @@ class ClientRouterCreator extends BaseComponent {
 	}
 	
 	findMatchRoute(router, currentMap) {
-		Object.keys(currentMap).map(function loop(pattern){
+		for(var pattern in currentMap){
 			// 去除regex
 			let patternValue = currentMap[pattern];
 			pattern = /^\//.test(pattern) ? pattern : "/"+pattern;
@@ -188,11 +192,11 @@ class ClientRouterCreator extends BaseComponent {
 				}
 				
 				// 所有 controller 檔案
-				Object.keys(this.controllerMap).map(function loopFile(filePath) {
+				for(var filePath in this.controllerMap){		
 					const urlPattern = this.controllerMap[filePath].urlPattern;
 					
 					// controller 檔案內的組合
-					Object.keys(urlPattern).map(function loopPattern(controllerAction) {
+					for(var controllerAction in urlPattern){
 						let controllerActionValue = urlPattern[controllerAction];
 						
 						// 註冊在全部
@@ -205,8 +209,6 @@ class ClientRouterCreator extends BaseComponent {
 							// 註冊在已匹配
 							if(this.registedUrl.indexOf(patternValue) === -1){
 								this.registedUrl.push(patternValue);
-							}else{
-								//return;
 							}
 							
 							// 如果是根目錄
@@ -228,8 +230,8 @@ class ClientRouterCreator extends BaseComponent {
 								}
 							}
 						}
-					}.bind(this));
-				}.bind(this));
+					}
+				}
 			}else{
 				// 新開一個物件
 				router.subRules[regexStr] = {
@@ -238,7 +240,7 @@ class ClientRouterCreator extends BaseComponent {
 				};
 				this.findMatchRoute(router.subRules[regexStr], patternValue);
 			}
-		}.bind(this));
+		}
 	}
 }
 

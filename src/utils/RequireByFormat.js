@@ -11,11 +11,11 @@ export default function RequireByFormat(expression) {
 			if(expressionArray.length > 1){
 				target = target.default || target;
 				
-				expressionArray.map(function(node, index){
+				for(var index = 0; index < expressionArray.length; index++){
 					if(index !== 0){
-						target = target[node];
+						target = target[expressionArray[index]];
 					}
-				});
+				}
 			}
 			
 			return target;
