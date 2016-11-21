@@ -111,6 +111,10 @@ module.exports = function webpackDevConfigMain(config) {
 	      {
 	        test: /\.svg$/,
 	        loader: 'file'
+	      },
+	      {
+	        test: /\.json$/,
+	        loader: 'json'
 	      }
 			]
 		}

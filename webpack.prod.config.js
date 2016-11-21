@@ -98,6 +98,10 @@ module.exports = function webpackBundleConfigMain(config) {
 	      {
 	        test: /\.svg$/,
 	        loader: 'file'
+	      },
+	      {
+	        test: /\.json$/,
+	        loader: 'json'
 	      }
 	    ]
 		}
