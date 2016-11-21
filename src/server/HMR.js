@@ -23,7 +23,7 @@ function clearCache(srcDirPath, filename){
 
 	require.cache[filename] = null;
 }
-
+/*
 function processForFileChange(libDirPath, nodeDirPath, filename) {
 	var targetFilePath = "";
 	
@@ -52,17 +52,31 @@ function processForFileCP(libDirPath, filename) {
 		targetFilePath = filename;
 	}
 	
-	targetFilePath = targetFilePath.replace(/\/src\//, "/lib/");
-	var result = FileUtil.getFile(filename, false);
-	var err = FileUtil.writeFile(targetFilePath, {code:result});
+	// targetFilePath = targetFilePath.replace(/\/src\//, "/lib/");
+	// var result = FileUtil.getFile(filename, false);
+	// var err = FileUtil.writeFile(targetFilePath, {code:result});
 	
 	clearCache(libDirPath, targetFilePath);
+	clearCache(nodeDirPath, path.resolve(__dirname, "../../client.js"));
+}
+*/
+function processAll(libDirPath, nodeDirPath, filename) {
+	var targetFilePath = "";
+	
+	if(FileUtil.isWindows()){
+		targetFilePath = filename.replace(/\\/g, "/");
+	}else{
+		targetFilePath = filename;
+	}
+	
+	clearCache(libDirPath, targetFilePath);
+	clearCache(nodeDirPath, path.resolve(__dirname, "../../client.js"));
 }
 
 function HMR(basePath, callback){
 	if(!isListen){
 		var srcDirPath = path.join(basePath,'/src');
-		var libDirPath = path.join(basePath, '/lib');
+		//var libDirPath = path.join(basePath, '/lib');
 		var nodeDirPath = path.join(basePath, '/node_modules');
 		isListen = true;
 		
@@ -77,7 +91,7 @@ function HMR(basePath, callback){
 			var targetFilePath = "";
 			
 			try{ 
-				if(FileUtil.isFile(filename)) {
+				/*if(FileUtil.isFile(filename)) {
 					if(FileUtil.isJsFile(filename)){
 						processForFileChange(libDirPath, nodeDirPath, filename);
 					}else{
@@ -86,7 +100,8 @@ function HMR(basePath, callback){
 				}else{
 					processForFileChange(libDirPath, nodeDirPath, filename);
 				}
-
+				*/
+				processAll(srcDirPath, nodeDirPath, filename);
 				callback(filename);
 				
 				observers.map(function(observer){
