@@ -1,36 +1,18 @@
 
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
+import logger from 'redux-logger';
 
-let logger = null;
-const canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
-
-if(!canUseDOM){
-	logger = function(){
-		return (store) => (next) => (action) => {
-			return next(action);
-		}
-	};
-}else{
-	if(process.env.NODE_ENV==='dev'){
-		if(canUseDOM && window["redux-logger"]===true){
-			logger = require('redux-logger');
-			logger = logger.default || logger;
-		}else{
-			logger = function(){
-				return (store) => (next) => (action) => {
-					return next(action);
-				}
-			};
-		}
-	}else{
-		logger = function(){
-			return (store) => (next) => (action) => {
+var _logger = function __logger() {
+	return function (store) {
+		return function (next) {
+			return function (action) {
 				return next(action);
-			}
+			};
 		};
-	}
-}
+	};
+};
+const canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
 
 function checkType(){
 	return (store) => (next) => (action) => {
@@ -40,7 +22,11 @@ function checkType(){
 }
 
 export default function ConfigureStore(rootReducer, middlewares, initialState) {
-	const defaultMiddlewares = [thunk, checkType(), logger()];
+	if (canUseDOM && window.reduxLogger === true) {
+		_logger = logger;
+	} 
+	
+	const defaultMiddlewares = [thunk, checkType(), _logger()];
 	const mergedMiddlewares = defaultMiddlewares.concat(middlewares);
 	const applyMiddlewareWrap = applyMiddleware.apply(this, mergedMiddlewares);
 	
