@@ -13,8 +13,16 @@ if(!canUseDOM){
 	};
 }else{
 	if(process.env.NODE_ENV==='dev'){
-		logger = require('redux-logger');
-		logger = logger.default || logger;
+		if(canUseDOM && window["redux-logger"]===true){
+			logger = require('redux-logger');
+			logger = logger.default || logger;
+		}else{
+			logger = function(){
+				return (store) => (next) => (action) => {
+					return next(action);
+				}
+			};
+		}
 	}else{
 		logger = function(){
 			return (store) => (next) => (action) => {
