@@ -1,9 +1,10 @@
 "use strict";
 
 exports.App = require("./lib/client/components/App.js").default;
-exports.WrapComponent = require("./lib/client/components/WrapComponent.js").default;
+//exports.WrapComponent = require("./lib/client/components/WrapComponent.js").default;
 exports.actions = {
-	language : require("./lib/client/actions/language.js")
+	language : require("./lib/client/actions/language.js"),
+	layerControl : require("./lib/client/actions/layerControl")
 };
 exports.reducers = {
 	history : require("./lib/client/reducers/history.js").default,

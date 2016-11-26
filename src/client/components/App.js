@@ -2,10 +2,20 @@
 
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
+import {closeLayer} from '../actions/layerControl';
 
 class App extends Component {
 	constructor( props, context ){
 		super( props, context );
+	}
+	
+	componentDidMount(){
+		var root = document.getElementById('root');
+		root.addEventListener('click', this.handleRootClick.bind(this));
+	}
+	
+	handleRootClick(e) {
+		closeLayer(e);
 	}
 	
 	getParamMap(){
