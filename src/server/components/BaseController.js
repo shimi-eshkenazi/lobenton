@@ -319,6 +319,14 @@ class BaseController extends BaseComponent {
 	}
 	
 	json(result, callbackName) {
+		if(!result){
+			result = { 
+				errorCode: 500,
+		    errorMsg: "Result is undefined or null, please check response from data server",
+		    errorStack: ''
+		  };
+		}
+		
 		if(typeof callbackName !== "undefined"){
 			return this.jsonp(result, callbackName);
 		}
@@ -333,6 +341,14 @@ class BaseController extends BaseComponent {
 	}
 	
 	jsonp(result, callbackName) {
+		if(!result){
+			result = { 
+				errorCode: 500,
+		    errorMsg: "Result is undefined or null, please check response from data server",
+		    errorStack: ''
+		  };
+		}
+		
 		this.response.setHeader('Content-Type', 'application/javascript; charset=utf-8');
 		this.sendBody(200, callbackName+"("+JSON.stringify(result)+")");
 	}
