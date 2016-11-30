@@ -1,3 +1,22 @@
+var pathModule = require('path');
+var assert = require('assert').ok;
+
+module.constructor.prototype.require = function require(path) {
+	var self = this;
+	assert(typeof path === 'string', 'path must be a string');
+	assert(path, 'missing path');
+
+	try {
+		return self.constructor._load(path, self);
+	} catch (err) {
+		if(global.hasOwnProperty(path)){
+			return global[path];
+		}else{
+			throw err;
+		}
+	}
+};
+
 Error.stackTraceLimit = 50;
 process.env.BABEL_DISABLE_CACHE=1;
 
