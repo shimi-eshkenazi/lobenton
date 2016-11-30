@@ -21,7 +21,7 @@ while(arg = args[index]){
     	if(config === false){
     		args.push('--create-reate-router');
     	}else if(config !== null && config !== false){
-    		lobenton.createApplication(config).runSimple();
+    		lobenton.createApplication(config).createRouter();
     	}
       break;
       

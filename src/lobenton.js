@@ -52,12 +52,18 @@ class Lobenton {
 		return Lobenton;
 	}
 	
-	static run(){
+	static run(callback){
+		callback(this.creator);
 		return this.creator.initial();
 	}
 	
-	static runSimple(router){
-		return this.creator.initialSimple(router);
+	static runSimple(callback){
+		callback(this.creator);
+		return this.creator.initialSimple(false);
+	}
+	
+	static createRouter(){
+		return this.creator.initialSimple();
 	}
 	
 	static getConfig(){
