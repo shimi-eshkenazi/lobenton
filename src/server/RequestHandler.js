@@ -72,18 +72,28 @@ class RequestHandler {
 			bodyParser.urlencoded({extended: true})
 		];
 		
-		if(process.env.NODE_ENV === "dev" && !this.config.isStart && this.config.webpackDevConfig){
-			let webpackDevConfigMain = require(this.config.webpackDevConfig);
-			webpackDevConfigMain = webpackDevConfigMain.default || webpackDevConfigMain;
-			
-			let webpackDevConfig = webpackDevConfigMain;
-			if(typeof webpackDevConfigMain === 'function'){
-				webpackDevConfig = webpackDevConfigMain({name: this.config.name});
-			}
-			
-			if(this.config.hasOwnProperty("webpackDevConfig")){
+		if(process.env.NODE_ENV === "dev" && !this.config.isStart){
+			if(this.config.hasOwnProperty("webpackDevConfig") && !compiler){
+				const beforeWebpackRunList = Utils.keep("beforeWebpackRun");
+				beforeWebpackRunList.map((beforeWebpackRun)=>{
+					beforeWebpackRun();
+				});
+							
+				let webpackDevConfigMain = require(this.config.webpackDevConfig);
+				webpackDevConfigMain = webpackDevConfigMain.default || webpackDevConfigMain;
+				
+				let webpackDevConfig = webpackDevConfigMain;
+				if(typeof webpackDevConfigMain === 'function'){
+					webpackDevConfig = webpackDevConfigMain({name: this.config.name});
+				}
+
 				if(!compiler){
 					createCompiler(webpackDevConfig);
+					
+					const afterWebpackRunList = Utils.keep("afterWebpackRun");
+					afterWebpackRunList.map((afterWebpackRun)=>{
+						afterWebpackRun();
+					});
 				}
 				
 				if(!devMiddleware){
@@ -93,8 +103,14 @@ class RequestHandler {
 				if(!hotMiddleware){
 					createHotMiddleware(webpackDevConfig);
 				}
-				
-				this.processChain.push(devMiddleware, hotMiddleware);
+			}
+			
+			if(devMiddleware){
+				this.processChain.push(devMiddleware);
+			}
+			
+			if(hotMiddleware){
+				this.processChain.push(hotMiddleware);
 			}
 		}
 		

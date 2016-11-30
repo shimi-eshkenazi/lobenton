@@ -4,6 +4,8 @@ import is from "is";
 import parseUrl from "parseurl";
 import qs from "qs";
 
+const keepMap = {};
+
 class Utils {
 	static fixUrl(request) {
 		return parseUrl(request)
@@ -42,6 +44,18 @@ class Utils {
 	
 	static getAllMethods(target) {
 		return Object.getOwnPropertyNames(target).filter(key => is.fn(target[key]))
+	}
+	
+	static keep(cate, callback) {
+		if(!keepMap[cate]){
+			keepMap[cate] = [];
+		}
+		
+		if(!callback){
+			return keepMap[cate];
+		}else{
+			keepMap[cate].push(callback);
+		}
 	}
 }
 

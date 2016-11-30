@@ -56,6 +56,11 @@ class AppCreator extends BaseComponent {
 					
 					setTimeout(function(){
 						this.reactRouter = require(createRouterFilepath).default;
+						
+						const afterAppRunList = Utils.keep("afterAppRun");
+						afterAppRunList.map((afterAppRun)=>{
+							afterAppRun();
+						});
 					}.bind(this), 0);
 				}.bind(this));
 				this.clientRouterCreator.initial();
@@ -85,12 +90,17 @@ class AppCreator extends BaseComponent {
 		}
 		
 		new RequestHandler(this.config, this.reactRouter);
+		
+		const afterAppRunList = Utils.keep("afterAppRun");
+		afterAppRunList.map((afterAppRun)=>{
+			afterAppRun();
+		});
 	}
 	
-	createComponents(noLog) {
+	createComponents(log) {
 		if(this.config.components){
 			for (let componentName in this.config.components){
-				if(componentName !== 'log' || (componentName === 'log' && noLog === true)){
+				if(componentName !== 'log' || (componentName === 'log' && log === true)){
 					const componentSetting = this.config.components[componentName];
 					componentSetting.basePath = this.config.basePath;
 					componentSetting.urlPrefixPath = this.config.urlPrefixPath;

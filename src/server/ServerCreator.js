@@ -3,6 +3,7 @@
 import http from 'http';
 import AppCreator from './AppCreator.js';
 import {BaseComponent} from 'lobenton';
+import Utils from "../utils/Utils.js";
 
 class ServerCreator extends BaseComponent {
 	constructor() {
@@ -12,6 +13,11 @@ class ServerCreator extends BaseComponent {
 	}
 	
 	initial() {
+		const beforeAppRunList = Utils.keep("beforeAppRun");
+		beforeAppRunList.map((beforeAppRun)=>{
+			beforeAppRun();
+		});
+		
 		this.app = new AppCreator(); 
 		
 		if(process.env.NODE_ENV === "dev" && !this.config.isStart){
@@ -35,6 +41,11 @@ class ServerCreator extends BaseComponent {
 	}
 	
 	initialSimple(router) {
+		const beforeAppRunList = Utils.keep("beforeAppRun");
+		beforeAppRunList.map((beforeAppRun)=>{
+			beforeAppRun();
+		});
+		
 		this.app = new AppCreator(); 
 		this.app.setConfig(this.config);
 		this.app.initialSimple(router);
@@ -78,6 +89,11 @@ class ServerCreator extends BaseComponent {
 	}
 	
 	onListening(){
+		const afterServerRunList = Utils.keep("afterServerRun");
+		afterServerRunList.map((afterServerRun)=>{
+			afterServerRun();
+		});
+		
 		console.log("Listening on port: " + this.config.port);
 	}
 }

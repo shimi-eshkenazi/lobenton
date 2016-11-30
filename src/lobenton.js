@@ -13,6 +13,25 @@ import TimerUtil from "./utils/TimerUtil.js";
 
 let isStart = JSON.parse(process.env.npm_config_argv).original.slice(-1).pop() === "start";
 
+function setConfig(){
+	let config = require(this.configPath);
+	config = config.default || config;
+	config.isStart = isStart;
+
+	process.title = config.name;
+	
+	if(process.env.NODE_ENV === "dev" && !isStart){
+		HMR(config.basePath, () => {
+			config = require(this.configPath);
+			config = config.default || config;
+			config.isStart = isStart;
+			this.creator.setConfig(config);
+		});
+	}
+	
+	this.creator.setConfig(config);
+}
+
 class Lobenton {
 	constructor() {
 		this.configPath = "";
@@ -30,39 +49,38 @@ class Lobenton {
 		
 		let ServerCreator = require("./server/ServerCreator.js");
 		ServerCreator = ServerCreator.default || ServerCreator;
-		
-		let config = require(configPath);
-		config = config.default || config;
-		config.isStart = isStart;
-		
-		process.title = config.name;
-
 		this.creator= new ServerCreator();
-		this.creator.setConfig(config);
-		
-		if(process.env.NODE_ENV === "dev" && !isStart){
-			HMR(config.basePath, function change() {
-				config = require(configPath);
-				config = config.default || config;
-				config.isStart = isStart;
-				this.creator.setConfig(config);
-			}.bind(this));
-		}
 		
 		return Lobenton;
 	}
 	
-	static run(callback){
-		callback(this.creator);
+	static run(){
+		const beforeServerRunList = Utils.keep("beforeServerRun");
+		beforeServerRunList.map((beforeServerRun)=>{
+			beforeServerRun();
+		});
+		
+		setConfig.call(this);
 		return this.creator.initial();
 	}
 	
-	static runSimple(callback){
-		callback(this.creator);
+	static runSimple(){
+		const beforeServerRunList = Utils.keep("beforeServerRun");
+		beforeServerRunList.map((beforeServerRun)=>{
+			beforeServerRun();
+		});
+		
+		setConfig.call(this);
 		return this.creator.initialSimple(false);
 	}
 	
 	static createRouter(){
+		const beforeServerRunList = Utils.keep("beforeServerRun");
+		beforeServerRunList.map((beforeServerRun)=>{
+			beforeServerRun();
+		});
+		
+		setConfig.call(this);
 		return this.creator.initialSimple();
 	}
 	
@@ -84,6 +102,34 @@ class Lobenton {
 	
 	static getComponent(componentName){
 		return this.creator.getApp().getComponent(componentName);
+	}
+	
+	static renewComponents(){
+		return this.creator.getApp().createComponents(false);
+	}
+	
+	static beforeServerRun(callback) {
+		Utils.keep("beforeServerRun", callback);
+	}
+	
+	static afterServerRun(callback) {
+		Utils.keep("afterServerRun", callback);
+	}
+	
+	static beforeAppRun(callback) {
+		Utils.keep("beforeAppRun", callback);
+	}
+	
+	static afterAppRun(callback) {
+		Utils.keep("afterAppRun", callback);
+	}
+	
+	static beforeWebpackRun(callback) {
+		Utils.keep("beforeWebpackRun", callback);
+	}
+	
+	static afterWebpackRun(callback) {
+		Utils.keep("afterWebpackRun", callback);
 	}
 }
 
