@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 var exec = require('child_process').exec;
+var request = require('sync-request');
+var _eval = require('eval');
 var lobenton = null;
 var config = false;
 var arg = null;
@@ -12,17 +14,17 @@ function puts(error, stdout, stderr) {
 }
 
 while(arg = args[index]){
-	var flag = arg.split('=')[0];
+  var flag = arg.split('=')[0];
 
   switch (flag) {
     case '--create-reate-router':
       lobenton = lobenton || require('../lib/index.js').default;
       
-    	if(config === false){
-    		args.push('--create-reate-router');
-    	}else if(config !== null && config !== false){
-    		lobenton.createApplication(config).createRouter();
-    	}
+      if(config === false){
+        args.push('--create-reate-router');
+      }else if(config !== null && config !== false){
+        lobenton.createApplication(config).createRouter();
+      }
       break;
       
     case '--init':
@@ -36,6 +38,31 @@ while(arg = args[index]){
       
     case '--config':
       config = arg.split('=')[1] || null;
+      break;
+    
+    case '--before-server-run':
+      var argStr = arg.replace(/\-\-before\-server\-run\=/,"");
+      
+      if(argStr){
+        var argStrList = argStr.split(",");
+        argStrList.map(function(package){
+          var packageName = package.split('=')[0] || null;
+          var packageSrc = package.split('=')[1] || null;
+          
+          if(packageName && packageSrc){
+            lobenton.beforeServerRun(function(){
+              var buffer = request('GET', packageSrc);
+              var res = buffer.getBody('utf8');
+              var resEval = _eval(res, true);
+              
+              global[packageName] = resEval;
+            });
+          }
+        });
+      }else{
+        console.warn("No value with --before-server-run");
+      }
+      
       break;
   }
   

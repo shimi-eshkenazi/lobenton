@@ -89,7 +89,7 @@ class AppCreator extends BaseComponent {
 			this.clientRouterCreator.initial();
 		}
 		
-		new RequestHandler(this.config, this.reactRouter);
+		new RequestHandler(this.config, this.reactRouter, this.simple);
 		
 		const afterAppRunList = Utils.keep("afterAppRun");
 		afterAppRunList.map((afterAppRun)=>{

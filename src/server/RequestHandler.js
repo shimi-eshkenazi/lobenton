@@ -56,7 +56,7 @@ function createHotMiddleware(webpackDevConfig){
 }
 
 class RequestHandler {
-	constructor(config, reactRouter) {
+	constructor(config, reactRouter, simple) {
 		this.controllerPath = null;
 		this.reactRouter = reactRouter || null;
 		this.config = config;
@@ -72,7 +72,7 @@ class RequestHandler {
 			bodyParser.urlencoded({extended: true})
 		];
 		
-		if(process.env.NODE_ENV === "dev" && !this.config.isStart){
+		if(process.env.NODE_ENV === "dev" && !this.config.isStart && !simple){
 			if(this.config.hasOwnProperty("webpackDevConfig") && this.config.webpackDevConfig && !compiler){
 				const beforeWebpackRunList = Utils.keep("beforeWebpackRun");
 				beforeWebpackRunList.map((beforeWebpackRun)=>{
