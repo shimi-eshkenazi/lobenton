@@ -73,7 +73,7 @@ class RequestHandler {
 		];
 		
 		if(process.env.NODE_ENV === "dev" && !this.config.isStart){
-			if(this.config.hasOwnProperty("webpackDevConfig") && !compiler){
+			if(this.config.hasOwnProperty("webpackDevConfig") && this.config.webpackDevConfig && !compiler){
 				const beforeWebpackRunList = Utils.keep("beforeWebpackRun");
 				beforeWebpackRunList.map((beforeWebpackRun)=>{
 					beforeWebpackRun();
