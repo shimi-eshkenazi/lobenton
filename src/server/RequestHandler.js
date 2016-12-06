@@ -186,6 +186,12 @@ class RequestHandler {
 					if(controller){
 						hasResult = true;
 						loop = false;
+					}else{
+						srcIndex++;
+						
+						if (srcIndex === matchResult.controllerPath.length) {
+							loop = false;
+						}
 					}
 				}catch(e){
 					srcIndex++;	
