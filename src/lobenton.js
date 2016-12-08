@@ -55,31 +55,16 @@ class Lobenton {
 	}
 	
 	static run(){
-		const beforeServerRunList = Utils.keep("beforeServerRun");
-		beforeServerRunList.map((beforeServerRun)=>{
-			beforeServerRun();
-		});
-		
 		setConfig.call(this);
 		return this.creator.initial();
 	}
 	
 	static runSimple(){
-		const beforeServerRunList = Utils.keep("beforeServerRun");
-		beforeServerRunList.map((beforeServerRun)=>{
-			beforeServerRun();
-		});
-		
 		setConfig.call(this);
 		return this.creator.initialSimple(false);
 	}
 	
 	static createRouter(){
-		const beforeServerRunList = Utils.keep("beforeServerRun");
-		beforeServerRunList.map((beforeServerRun)=>{
-			beforeServerRun();
-		});
-		
 		setConfig.call(this);
 		return this.creator.initialSimple();
 	}

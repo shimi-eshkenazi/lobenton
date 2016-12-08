@@ -13,6 +13,11 @@ class ServerCreator extends BaseComponent {
 	}
 	
 	initial() {
+		const beforeServerRunList = Utils.keep("beforeServerRun");
+		beforeServerRunList.map((beforeServerRun)=>{
+			beforeServerRun(this.config);
+		});
+		
 		const beforeAppRunList = Utils.keep("beforeAppRun");
 		beforeAppRunList.map((beforeAppRun)=>{
 			beforeAppRun(this.config);
@@ -41,6 +46,11 @@ class ServerCreator extends BaseComponent {
 	}
 	
 	initialSimple(router) {
+		const beforeServerRunList = Utils.keep("beforeServerRun");
+		beforeServerRunList.map((beforeServerRun)=>{
+			beforeServerRun(this.config);
+		});
+		
 		const beforeAppRunList = Utils.keep("beforeAppRun");
 		beforeAppRunList.map((beforeAppRun)=>{
 			beforeAppRun(this.config);
