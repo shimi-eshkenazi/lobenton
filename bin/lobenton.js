@@ -53,7 +53,7 @@ while(arg = args[index]){
             lobenton.beforeServerRun(function(){
               var buffer = request('GET', packageSrc);
               var res = buffer.getBody('utf8');
-              var resEval = _eval(res, true);
+              var resEval = _eval(res, {require:require}, true);
               
               global[packageName] = resEval;
             });
