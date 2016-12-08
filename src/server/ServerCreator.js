@@ -15,7 +15,7 @@ class ServerCreator extends BaseComponent {
 	initial() {
 		const beforeAppRunList = Utils.keep("beforeAppRun");
 		beforeAppRunList.map((beforeAppRun)=>{
-			beforeAppRun();
+			beforeAppRun(this.config);
 		});
 		
 		this.app = new AppCreator(); 
@@ -43,7 +43,7 @@ class ServerCreator extends BaseComponent {
 	initialSimple(router) {
 		const beforeAppRunList = Utils.keep("beforeAppRun");
 		beforeAppRunList.map((beforeAppRun)=>{
-			beforeAppRun();
+			beforeAppRun(this.config);
 		});
 		
 		this.app = new AppCreator(); 
@@ -91,7 +91,7 @@ class ServerCreator extends BaseComponent {
 	onListening(){
 		const afterServerRunList = Utils.keep("afterServerRun");
 		afterServerRunList.map((afterServerRun)=>{
-			afterServerRun();
+			afterServerRun(this.config);
 		});
 		
 		console.log("Listening on port: " + this.config.port);

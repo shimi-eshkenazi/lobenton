@@ -76,7 +76,7 @@ class RequestHandler {
 			if(this.config.hasOwnProperty("webpackDevConfig") && this.config.webpackDevConfig && !compiler){
 				const beforeWebpackRunList = Utils.keep("beforeWebpackRun");
 				beforeWebpackRunList.map((beforeWebpackRun)=>{
-					beforeWebpackRun();
+					beforeWebpackRun(this.config);
 				});
 							
 				let webpackDevConfigMain = require(this.config.webpackDevConfig);
@@ -92,7 +92,7 @@ class RequestHandler {
 					
 					const afterWebpackRunList = Utils.keep("afterWebpackRun");
 					afterWebpackRunList.map((afterWebpackRun)=>{
-						afterWebpackRun();
+						afterWebpackRun(this.config);
 					});
 				}
 				
@@ -248,19 +248,23 @@ class RequestHandler {
 					controllerInstance.layout = controller.layout;
 				}
 				
+				// only fix annotation of method and login
 				controller[matchResult.action] = FileUtil.fixDefProperties(controller[matchResult.action]);
 				
-				var index = 0;
+				//var index = 0;
+				//assign to action from instance
 				for(var key in controller[matchResult.action]){
 					action[key] = controller[matchResult.action][key];
-					index++;
+					//index++;
 				}
 			}else{
 				throw new NotFoundException("Annotation To Props Error : Cannot find action '"+matchResult.action+"' at '"+matchResult.controller+"'; Url : "+this.request.url);
 			}
 			
-			if(typeof action.method === 'string' && action.method.toUpperCase() !== this.request.method.toUpperCase()){
-				throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+matchResult.controller+"'; Url : "+this.request.url);
+			if(typeof action.method === 'string'){
+				if(action.method !== "*" && action.method.toUpperCase() !== this.request.method.toUpperCase()){
+					throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+matchResult.controller+"'; Url : "+this.request.url);
+				}
 			}else if(typeof action.method === 'object'){
 				if(action.method.indexOf(this.request.method.toUpperCase()) === -1){
 					throw new NotFoundException("Http method Error : Cannot find action '"+matchResult.action+"' at '"+matchResult.controller+"'; Url : "+this.request.url);
@@ -282,6 +286,29 @@ class RequestHandler {
 				
 				controllerInstance.afterContinue(function checkLogin(result){
 					try {
+						const reqHeaders = controllerInstance.getHeaderMap();
+						
+						if(action.hasOwnProperty("accessControlAllowOrigin")){
+							if(action.accessControlAllowOrigin === "*"){
+								this.response.setHeader('Access-Control-Allow-Origin', '*');
+							}else{		
+								this.response.setHeader('Access-Control-Allow-Origin', action.accessControlAllowOrigin);
+							}
+						}
+						
+						if(action.hasOwnProperty("accessControlAllowMethods")){
+							if(action.accessControlAllowMethods === "*"){
+								this.response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+							}else{		
+								this.response.setHeader('Access-Control-Allow-Methods', action.accessControlAllowMethods);
+							}
+						}
+						
+						if(action.hasOwnProperty("accessControlAllowOrigin") || action.hasOwnProperty("accessControlAllowMethods")){
+							this.response.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+							this.response.setHeader('Access-Control-Allow-Credentials', true);
+						}
+						
 						controllerInstance.setAction(matchResult.action);
 						controllerInstance.setFilterResult(result);
 						controllerInstance.setParamMap(paramObj.paramMap);

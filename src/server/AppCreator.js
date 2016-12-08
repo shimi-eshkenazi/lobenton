@@ -59,7 +59,7 @@ class AppCreator extends BaseComponent {
 						
 						const afterAppRunList = Utils.keep("afterAppRun");
 						afterAppRunList.map((afterAppRun)=>{
-							afterAppRun();
+							afterAppRun(this.config);
 						});
 					}.bind(this), 0);
 				}.bind(this));
@@ -93,7 +93,7 @@ class AppCreator extends BaseComponent {
 		
 		const afterAppRunList = Utils.keep("afterAppRun");
 		afterAppRunList.map((afterAppRun)=>{
-			afterAppRun();
+			afterAppRun(this.config);
 		});
 	}
 	
