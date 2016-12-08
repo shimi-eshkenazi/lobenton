@@ -34,6 +34,7 @@ function setConfig(){
 
 class Lobenton {
 	constructor() {
+		this.config = {env:process.env.NODE_ENV};
 		this.configPath = "";
 		this.creator = null;
 	}
@@ -55,16 +56,31 @@ class Lobenton {
 	}
 	
 	static run(){
+		const beforeServerRunList = Utils.keep("beforeServerRun");
+		beforeServerRunList.map((beforeServerRun)=>{
+			beforeServerRun(this.config);
+		});
+		
 		setConfig.call(this);
 		return this.creator.initial();
 	}
 	
 	static runSimple(){
+		const beforeServerRunList = Utils.keep("beforeServerRun");
+		beforeServerRunList.map((beforeServerRun)=>{
+			beforeServerRun(this.config);
+		});
+		
 		setConfig.call(this);
 		return this.creator.initialSimple(false);
 	}
 	
 	static createRouter(){
+		const beforeServerRunList = Utils.keep("beforeServerRun");
+		beforeServerRunList.map((beforeServerRun)=>{
+			beforeServerRun(this.config);
+		});
+		
 		setConfig.call(this);
 		return this.creator.initialSimple();
 	}
