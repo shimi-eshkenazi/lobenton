@@ -34,7 +34,6 @@ function setConfig(){
 
 class Lobenton {
 	constructor() {
-		this.config = {env:process.env.NODE_ENV};
 		this.configPath = "";
 		this.creator = null;
 	}
@@ -50,7 +49,9 @@ class Lobenton {
 		
 		let ServerCreator = require("./server/ServerCreator.js");
 		ServerCreator = ServerCreator.default || ServerCreator;
+		
 		this.creator= new ServerCreator();
+		this.config = {env:process.env.NODE_ENV};
 		
 		return Lobenton;
 	}
