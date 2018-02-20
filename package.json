@@ -118,7 +118,7 @@
     "sync-request": "^3.0.1",
     "unirest": "^0.5.1",
     "url": "^0.11.0",
-    "validator": "^5.7.0",
+    "validator": "^9.4.1",
     "webpack": "^1.13.3",
     "webpack-dev-middleware": "^1.8.4",
     "webpack-hot-middleware": "^2.13.2",
