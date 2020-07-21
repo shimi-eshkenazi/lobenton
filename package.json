@@ -78,7 +78,7 @@
     "file-loader": "^0.8.5",
     "get-parameter-names": "^0.3.0",
     "happypack": "^2.2.1",
-    "i18next": "^3.5.2",
+    "i18next": "^19.6.0",
     "is": "^3.2.0",
     "jquery": "^2.2.4",
     "jquery-ui": "^1.12.1",
